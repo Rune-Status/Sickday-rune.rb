@@ -44,6 +44,9 @@ module RuneRb
 
   # The Model module provides object models of abstract types.
   module Model
+    require_relative 'rune/model/constants'
+    include Constants
+
     autoload :HitType,             'rune/model/combat'
     autoload :Hit,                 'rune/model/combat'
     autoload :Damage,              'rune/model/combat'
@@ -76,6 +79,9 @@ module RuneRb
 
   # The Player module provides Player-specific objects, models, and modules.
   module Player
+    require_relative 'rune/model/player/constants'
+    include Constants
+
     autoload :Appearance,          'rune/model/player/appearance'
     autoload :InterfaceState,      'rune/model/player/interfacestate'
     autoload :RequestManager,      'rune/model/player/requestmanager'

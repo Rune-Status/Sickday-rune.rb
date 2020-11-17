@@ -228,14 +228,14 @@ module RuneRb::World
     end
 
     def encode_skills(skills)
-      RuneRb::Player::Skills::SKILLS.inject([]){|arr, sk|
+      RuneRb::Player::SKILLS.inject([]){|arr, sk|
         arr << [skills.skills[sk], skills.exps[sk]]
       }
     end
 
     def decode_skills(skills, data)
       data.each_with_index {|val, i|
-        skills.set_skill RuneRb::Player::Skills::SKILLS[i], val[0], val[1], false
+        skills.set_skill RuneRb::Player::SKILLS[i], val[0], val[1], false
       }
     end
 

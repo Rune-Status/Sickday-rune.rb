@@ -54,16 +54,14 @@ module RuneRb::Net
     
     # Update all player skills.
     def send_skills
-      RuneRb::Player::Skills::SKILLS.each {|s|
-        send_skill s
-      }
+      RuneRb::Player::SKILLS.each { |s| send_skill(s) }
       self
     end
     
     # Send a specific skill update.
     def send_skill(skill)
       bldr = PacketBuilder.new(134)
-      bldr.add_byte RuneRb::Player::Skills::SKILLS.index(skill)
+      bldr.add_byte RuneRb::Player::SKILLS.index(skill)
       bldr.add_int1 @player.skills.exps[skill]
       bldr.add_byte @player.skills.skills[skill]
       

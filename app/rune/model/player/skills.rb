@@ -1,30 +1,7 @@
 module RuneRb::Player
   # Skills
   class Skills
-    MAX_EXP = 200000000
-    SKILLS = [
-      :attack,
-      :defence,
-      :strength,
-      :hitpoints,
-      :range,
-      :prayer,
-      :magic,
-      :cooking,
-      :woodcutting,
-      :fletching,
-      :fishing,
-      :firemaking,
-      :crafting,
-      :smithing,
-      :mining,
-      :herblore,
-      :agility,
-      :thieving,
-      :slayer,
-      :farming,
-      :runecrafting
-    ]
+
     attr :skills
     attr :exps
     attr :player
@@ -35,10 +12,11 @@ module RuneRb::Player
       @skills ||= {}
       @exps ||= {}
       
-      SKILLS.each {|skill|
+      RuneRb::Player::SKILLS.each do |skill|
         @skills[skill] = 1
         @exps[skill] = 0
-      }
+      end
+
       # Start with 10 hitpoints
       @skills[:hitpoints] = 10
       @exps[:hitpoints] = 1184
@@ -149,7 +127,7 @@ module RuneRb::Player
       old = @skills[skill]
       @exps[skill] += exp
       
-      @exps[skill] = MAX_EXP if @exps[skill] > MAX_EXP
+      @exps[skill] = RuneRb::Player::MAX_EXP if @exps[skill] > RuneRb::Player::MAX_EXP
       
       new = level_for_exp skill
       diff = new - old

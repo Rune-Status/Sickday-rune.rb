@@ -19,10 +19,7 @@ module RuneRb::Item
   
   class ItemDefinition
     # prices, basevalue
-    PROPERTIES = [:name, :noted, :parent, :noteable, :noteID, :stackable, :members, :prices, :basevalue, :att_stab_bonus,
-                  :att_slash_bonus, :att_crush_bonus, :att_magic_bonus, :att_ranged_bonus, :def_stab_bonus, :def_slash_bonus,
-                  :def_crush_bonus, :def_magic_bonus, :def_ranged_bonus, :strength_bonus, :prayer_bonus, :weight]
-    BOOL_PROPERTIES = [:noted, :noteable, :stackable, :members, :prices]
+
     
     @@db = nil
     @@definitions = {}
@@ -33,16 +30,16 @@ module RuneRb::Item
     def initialize(id)
       @id = id
       @properties = lambda do |key|
-        if PROPERTIES.include?(key)
+        if RuneRb::Model::ITEM_PROPERTIES.include?(key)
           val = @@db.get_first_value("select #{key} from items where id = #{@id}")
-          BOOL_PROPERTIES.include?(key) ? val == 1 : val
+          RuneRb::Model::ITEM_BOOLS.include?(key) ? val == 1 : val
         else
           nil
         end
       end
     end
     
-    PROPERTIES.each do |p|
+    RuneRb::Model::ITEM_PROPERTIES.each do |p|
       define_method(p.id2name) do
         @properties[p]
       end
@@ -168,7 +165,7 @@ module RuneRb::Item
       when Symbol
         id
       when Integer
-        RuneRb::Item::ItemDefinition::PROPERTIES[id + 9]
+        RuneRb::Model::ITEM_PROPERTIES[id + 9]
       end
       
       if bonus
@@ -192,7 +189,7 @@ module RuneRb::Item
   end
 
   class Container
-    MAX_ITEMS = 2**31-1
+
     attr :capacity
     attr :items
     attr :listeners
@@ -215,7 +212,7 @@ module RuneRb::Item
         
         if existing
           count = item.count + new.count
-          return false if count > MAX_ITEMS || count < 1
+          return false if count > RuneRb::Model::MAX_ITEMS || count < 1
           
           set i, Item.new(new.id, count)
           return true

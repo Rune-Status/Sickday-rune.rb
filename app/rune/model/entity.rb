@@ -1,7 +1,6 @@
 module RuneRb::Model
   class Entity
-    DEFAULT_LOCATION = RuneRb::Model::Location.new 2887, 10224, 0
-    
+
     # Info
     attr :id
     attr :flags
@@ -48,7 +47,7 @@ module RuneRb::Model
       @local_npcs = []
       @sprites = Array.new(2, -1)
       
-      @location = DEFAULT_LOCATION
+      @location = RuneRb::Model::Location.new(2887, 10224, 0)
       @last_location = @location
       @region_change = false
       @teleporting = false

@@ -1,6 +1,5 @@
 module RuneRb::Player
   class RequestManager
-    REQUESTS = { :trade => "tradereq", :duel => "duelreq" }
     attr_accessor :request_type
     attr_accessor :request_state
     attr_accessor :trade_state
