@@ -1,9 +1,7 @@
 PACKETS = {}
 
 def on_packet(*ids, &block)
-  ids.each {|id|
-    PACKETS[id] = block
-  }
+  ids.each { |id| PACKETS[id] = block }
 end
 
 module RuneRb
@@ -17,14 +15,11 @@ module RuneRb
     end
     
     def Net.handle_packet(player, packet)
-      return if !player
+      return unless player
     
       if PACKETS.include?(packet.opcode)
         handler = PACKETS[packet.opcode]
-        
-        if handler.instance_of?(Proc)
-          handler.call(player, packet)
-        end
+        handler.call(player, packet) if handler.instance_of?(Proc)
       else
         Logging.logger['packets'].warn "Unhandled packet: id = #{packet.opcode}, length = #{packet.buffer.length}, payload = #{Net.hexstr(packet.buffer)}"
       end

@@ -4,7 +4,7 @@ on_int_button(2458) {|player|
   player.io.send_logout
 }
 
-on_command("objspawn") {|player, params|
+on_command('objspawn') {|player, params|
   temp_loc = player.location
 
   object = RuneRb::Objects::Object.new(params[0].to_i, temp_loc, 2, params[1].to_i, -1, temp_loc, 0, params[2].to_i)
@@ -15,58 +15,58 @@ on_command("objspawn") {|player, params|
 }
 
 # Testing
-on_command("shop") { |player, params| WORLD.shop_manager.open(1, player) }
+on_command('shop') { |player, params| WORLD.shop_manager.open(1, player) }
 
-on_command("pos") {|player, params|
+on_command('pos') {|player, params|
   player.io.send_message "You are at #{player.location.inspect}."
 }
 
-on_command("update") {|player, params|
+on_command('update') {|player, params|
   time = params.first.to_i
   WORLD.submit_event RuneRb::Tasks::SystemUpdateEvent.new(time)
 }
 
-on_command("dc") {|player, params|
+on_command('dc') {|player, params|
   player.connection.close_connection
 }
 
-on_command("goup") {|player, params|
+on_command('goup') {|player, params|
   player.teleport_location = player.location.transform(0, 0, 1)
 }
 
-on_command("godown") {|player, params|
+on_command('godown') {|player, params|
   player.teleport_location = player.location.transform(0, 0, -1)
 }
 
-on_command("item") {|player, params|
+on_command('item') {|player, params|
   id = params[0].to_i
   count = params.length == 2 ? params[1].to_i : 1
   player.inventory.add RuneRb::Item::Item.new(id, count)
 }
 
-on_command("design") {|player, params|
+on_command('design') {|player, params|
   player.io.send_interface 3559
 }
 
 on_item_on_player(1050) {|player, used_player|
-  player.io.send_message "You used 1050 on a player"
-  used_player.io.send_message "someone used you"
+  player.io.send_message 'You used 1050 on a player'
+  used_player.io.send_message 'someone used you'
 }
 
 on_item_on_npc(1050, 1) {|player, npc|
-  player.io.send_message "You used a santa on an npc"
+  player.io.send_message 'You used a santa on an npc'
 }
 
 on_int_button(3651) {|player|
   player.io.send_clear_screen
 }
 
-on_command("reload") {|player, params|
-  player.io.send_message "Reloading..."
+on_command('reload') {|player, params|
+  player.io.send_message 'Reloading...'
   SERVER.reload
 }
 
-on_command("spawn") do |player, params|
+on_command('spawn') do |player, params|
   data = {}.tap do |hash|
     hash[:mob_id] = params[0].to_i
     hash[:shop_id] = params[1].to_i if params.size > 0
@@ -79,7 +79,7 @@ on_command("spawn") do |player, params|
 end
 
 
-on_command("cfg") {|player, params|
+on_command('cfg') {|player, params|
   id = params[0].to_i
   value = params[1].to_i
   player.io.send_config id, value
@@ -87,34 +87,34 @@ on_command("cfg") {|player, params|
 }
 
 on_npc_option2(592) {|player, npc|
-  player.io.send_message "Open shop"
+  player.io.send_message 'Open shop'
 }
 
-on_command("teleto") {|player, params|
+on_command('teleto') {|player, params|
   target = get_player(params[0])
   unless target == nil
     player.teleport_location = target.location
     player.io.send_message "You were teleported to #{target.name}."
     target.io.send_message "#{player.name} teleported to you."
   else
-    player.io.send_message "User not found."
+    player.io.send_message 'User not found.'
   end
 }
 
 # Have the player enter a number, and see if
 # it is correct.
-on_command("guess") {|player, params|
+on_command('guess') {|player, params|
   # Turn the string into an integer using to_i
   number = params[0].to_i
 
   if number == 1234
-    player.io.send_message "Yay! You win!"
+    player.io.send_message 'Yay! You win!'
   else
-    player.io.send_message "You guessed wrong!"
+    player.io.send_message 'You guessed wrong!'
   end
 }
 
-on_command("tele") {|player, params|
+on_command('tele') {|player, params|
   x = params[0].to_i
   y = params[1].to_i
   z = params.length > 2 ? params[2].to_i : 0
@@ -123,22 +123,22 @@ on_command("tele") {|player, params|
   player.teleport_location = loc
 }
 
-on_command("snow") {|player, params|
+on_command('snow') {|player, params|
   player.io.send_interface(11877, true)
 }
 
-on_command("teletome") {|player, params|
+on_command('teletome') {|player, params|
   target = get_player(params[0])
   unless target == nil
     target.teleport_location = player.location
     player.io.send_message "#{target.name} was teleported to you."
     target.io.send_message "You were teleported to #{player.name}."
   else
-    player.io.send_message "User not found."
+    player.io.send_message 'User not found.'
   end
 }
 
-on_command("teleall") {|player, params|
+on_command('teleall') {|player, params|
   WORLD.players.each {|target|
     if target != nil and target.name != player.name
       target.teleport_location = player.location
@@ -147,16 +147,16 @@ on_command("teleall") {|player, params|
   }
 }
 
-on_command("move") {|player, params|
+on_command('move') {|player, params|
   player.flags.flag :forced_move
 }
 
-on_command("em") {|player, params|
+on_command('em') {|player, params|
   val = eval("player.#{params.first}")
   player.io.send_message "returned: #{val.inspect}"
 }
 
-on_command("g") {|player, params|
+on_command('g') {|player, params|
   x = player.location.x + 1
   y = player.location.y
   z = player.location.z
@@ -164,35 +164,35 @@ on_command("g") {|player, params|
   player.face RuneRb::Model::Location.new(x, y, z)
 }
 
-on_command("max") {|player, params|
-  RuneRb::Player::Skills::SKILLS.each {|skill|
-    player.skills.set_skill skill, 99, 13034431
-  }
-  player.flags.flag :appearance
-}
+on_command('max') do |player, params|
+  RuneRb::Player::SKILLS.each do |skill|
+    player.skills.set_skill(skill, 99, 13034431)
+  end
+  player.flags.flag(:appearance)
+end
 
-on_command("md") {|player, params|
+on_command('md') {|player, params|
   player.model = params.first.to_i
   player.flags.flag :appearance
 }
 
-on_command("sa") {|player, params|
+on_command('sa') {|player, params|
   player.standanim = params.first.to_i
   player.flags.flag :appearance
 }
 
-on_command("wa") {|player, params|
+on_command('wa') {|player, params|
   player.walkanim = params.first.to_i
   player.flags.flag :appearance
 }
 
-on_command("empty") {|player, params|
+on_command('empty') {|player, params|
   player.inventory.clear
   player.inventory.fire_items_changed
 }
 
 on_item_on_obj(1050, 1278) {|player, loc|
-  player.io.send_message "Holy shit batman."
+  player.io.send_message 'Holy shit batman.'
 }
 
 def self.get_player(name)
