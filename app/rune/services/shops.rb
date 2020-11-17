@@ -1,35 +1,12 @@
 module RuneRb::Shops
   class ShopManager
-    @@shops = {}
-      
-    def load_shops
-      data = XmlSimple.xml_in("data/shops.xml")
-      data["shop"].each {|row|
-        @@shops[row['id'].to_i] = shop = Shop.new
-        shop.name = row['name']
-        shop.generalstore = row['generalstore'].eql?("true")  # buy modifier
-        shop.customstock = row['customstock'].eql?("true")    # sell modifier
-        stock = {}
-        
-        row['item'].each {|item|
-          items = item.inject({}) {|result, (key, value)| result[key] = value.to_i; result }
-          stock.store *items.values
-        }
-        
-        shop.original_stock = stock
-      }
-    end
-    
-    def ShopManager.get(id)
-      @@shops[id]
-    end
-    
-    def ShopManager.open(shop_id, player)
-      shop = @@shops[shop_id]
-      return if shop == nil
-    
+
+    def open(shop_id, player)
+      shop = WORLD.shops[shop_id]
+      return if shop.nil?
+
       player.current_shop = shop
-      
+
       shop.container.remove_empty_slots
       player.io.send_string 3901, shop.name
       player.io.send_interface_inventory 3824, 3822
@@ -37,13 +14,13 @@ module RuneRb::Shops
       player.interface_state.add_listener player.inventory, RuneRb::Item::InterfaceContainerListener.new(player, 3823)
     end
     
-    def ShopManager.clamp(x, min, max)
+    def clamp(x, min, max)
       x = max if x > max
       x = min if x < min
       x
     end
     
-    def ShopManager.sell_value(player, slot)
+    def sell_value(player, slot)
       return nil if (shop = player.current_shop) == nil
       
       # Get price of the item or its parent if noted
@@ -60,7 +37,7 @@ module RuneRb::Shops
       offer
     end
       
-    def ShopManager.buy_value(player, slot)
+    def buy_value(player, slot)
       return nil if (shop = player.current_shop) == nil
       
       item = shop.container.items[slot]
@@ -75,7 +52,7 @@ module RuneRb::Shops
       price
     end
     
-    def ShopManager.buy(player, slot, id, amount)
+    def buy(player, slot, id, amount)
       return if (shop = player.current_shop) == nil
       return if (item = shop.container.items[slot]) == nil || item.id != id
       
@@ -144,7 +121,7 @@ module RuneRb::Shops
       end
     end
     
-    def ShopManager.sell(player, slot, id, amount)
+    def sell(player, slot, id, amount)
       return if (shop = player.current_shop) == nil
       return if (item = player.inventory.items[slot]) == nil || item.id != id
     
@@ -218,9 +195,9 @@ module RuneRb::Shops
     def original_stock=(stock)
       @container.clear
       @original_stock = stock
-      @original_stock.each {|item, amount|
+      @original_stock.each do |item, amount|
         @container.items << RuneRb::Item::Item.new(item, amount)
-      }
+      end
     end
   end
 end

@@ -14,6 +14,9 @@ on_command("objspawn") {|player, params|
  WORLD.object_manager.objects << object
 }
 
+# Testing
+on_command("shop") { |player, params| WORLD.shop_manager.open(1, player) }
+
 on_command("pos") {|player, params|
   player.io.send_message "You are at #{player.location.inspect}."
 }

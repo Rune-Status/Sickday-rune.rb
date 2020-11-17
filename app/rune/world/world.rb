@@ -4,6 +4,7 @@ module RuneRb::World
     attr :players
     attr :npcs
     attr :items
+    attr :shops
     attr :region_manager
     attr :event_manager
     attr :shop_manager
@@ -16,6 +17,7 @@ module RuneRb::World
       @players = []
       @npcs = []
       @items = []
+      @shops = {}
       @region_manager = RuneRb::Model::RegionManager.new
       @event_manager = RuneRb::Engine::EventManager.new
       @loader = YAMLFileLoader.new
@@ -26,6 +28,8 @@ module RuneRb::World
       @door_manager = RuneRb::Doors::DoorManager.new
       register_global_events
       load_items
+      load_shops
+      load_doors
     end
 
     def load_items
@@ -34,6 +38,33 @@ module RuneRb::World
       end
 
       submit_event(RuneRb::World::ItemEvent.new)
+      puts 'Loaded World Items'
+    end
+
+    def load_shops
+      RuneRb::Database::LEGACY[:shops].all.each do |shop_data|
+        @shops[shop_data[:id]] = RuneRb::Shops::Shop.new
+        @shops[shop_data[:id]].name = shop_data[:name]
+        @shops[shop_data[:id]].generalstore = shop_data[:general_store]
+        @shops[shop_data[:id]].customstock = true
+        @shops[shop_data[:id]].original_stock = {}.tap do |hash|
+          parsed = Oj.load(shop_data[:inventory].gsub('=>', ':'))
+          parsed.each do |item|
+            hash[item['id'].to_i] = item['amount'].to_i
+          end
+        end
+      end
+      puts 'Loaded Shops'
+    end
+
+    def load_doors
+      @door_manager.load_single_doors
+      @door_manager.load_double_doors
+      puts 'Loaded Doors'
+    rescue StandardError => e
+      puts 'An error occurred while loading Doors!'
+      puts e
+      puts e.backtrace
     end
 
     def add_to_login_queue(session)
@@ -142,15 +173,15 @@ module RuneRb::World
 
   class Loader
     def check_login(session)
-      raise "check_login not implemented"
+      raise 'check_login not implemented'
     end
 
     def load_profile(player)
-      raise "load_profile not implemented"
+      raise 'load_profile not implemented'
     end
 
     def save_profile(player)
-      raise "save_profile not implemented"
+      raise 'save_profile not implemented'
     end
   end
 
@@ -163,7 +194,7 @@ module RuneRb::World
 
       existing = WORLD.players.find(nil) {|p| p.name.eql?(session.username)}
 
-      if existing == nil
+      if existing.nil?
         # no existing user with this name, new login
         return LoginResult.new(2, RuneRb::Model::Player.new(session))
       else
@@ -184,7 +215,7 @@ module RuneRb::World
 
         RuneRb::World::PROFILE_LOG.info "Retrieving profile: #{key}"
 
-        if profile == nil
+        if profile.nil?
           default_profile(player)
         else
           player.rights = RuneRb::World::RIGHTS[2] #RuneRb::World::RIGHTS[profile.rights] || :player
@@ -200,7 +231,7 @@ module RuneRb::World
           player.settings = profile.settings || {}
         end
       rescue Exception => e
-        RuneRb::World::PROFILE_LOG.error "Unable to load profile"
+        RuneRb::World::PROFILE_LOG.error 'Unable to load profile'
         RuneRb::World::PROFILE_LOG.error e
         return false
       end
@@ -230,7 +261,7 @@ module RuneRb::World
       profile.ignores = player.varp.ignores
       profile.settings = player.settings
 
-      File.open("./data/profiles/#{key}.yaml", "w" ) do |out|
+      File.open("./data/profiles/#{key}.yaml", 'w' ) do |out|
         YAML.dump(profile, out)
         out.flush
       end
@@ -254,7 +285,7 @@ module RuneRb::World
       arr = Array.new(container.capacity, [-1, -1])
 
       container.items.each_with_index {|val, i|
-        arr[i] = [val.id, val.count] unless val == nil
+        arr[i] = [val.id, val.count] unless val.nil?
       }
 
       arr

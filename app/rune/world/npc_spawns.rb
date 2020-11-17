@@ -25,11 +25,11 @@ module RuneRb::World
       if data.include?('shop')
         handler = HOOKS[:npc_option2][data['id'].to_i]
 
-        if !handler.instance_of?(Proc)
-          on_npc_option2(data['id'].to_i) {|player, npc|
-            RuneRb::Shops::ShopManager.open(data['shop'].to_i, player)
+        unless handler.instance_of?(Proc)
+          on_npc_option2(data['id'].to_i) do |player, npc|
+            WORLD.shop_manager.open(data['shop'].to_i, player)
             player.interacting_entity = npc
-          }
+          end
         end
       end
     end

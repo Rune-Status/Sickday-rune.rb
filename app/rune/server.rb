@@ -86,10 +86,6 @@ module RuneRb
 
     # Attempts to load configuration files and definitions for Doors, Shops, NPCSpawns, and ItemSpawns.
     def load_config
-      WORLD.shop_manager.load_shops
-      WORLD.door_manager.load_single_doors
-      WORLD.door_manager.load_double_doors
-
       RuneRb::World::NPCSpawns.load
     end
 
