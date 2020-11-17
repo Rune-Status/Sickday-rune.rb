@@ -1,4 +1,4 @@
-require 'shellwords'
+
 
 # Chat
 on_packet(4) {|player, packet|

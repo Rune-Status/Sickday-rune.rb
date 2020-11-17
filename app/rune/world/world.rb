@@ -1,5 +1,3 @@
-require 'yaml'
-
 module RuneRb::World
   RIGHTS = [:player, :mod, :admin, :owner]
   

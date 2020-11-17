@@ -1,8 +1,14 @@
 require 'logging'
 require 'eventmachine'
+require 'socket'
 require 'sqlite3'
 require 'rufus/scheduler'
 require 'ostruct'
+require 'yaml'
+require 'shellwords'
+require 'xmlsimple'
+require 'pp'
+require 'to_regexp'
 
 # Top-Level namespace
 # Rune.rb is a game server written in Ruby targeting the 2006 era of RuneScape (or the 317-377 protocols). This branch is a fork of the first known ruby server, calyx.

@@ -1,6 +1,3 @@
-require 'eventmachine'
-require 'socket'
-
 module RuneRb::Net
   # Connection throttling
   CONNECTION_TIMES = {}

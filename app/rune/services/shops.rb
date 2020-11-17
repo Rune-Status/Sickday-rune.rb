@@ -1,5 +1,3 @@
-require 'xmlsimple'
-
 module RuneRb::Shops
   class ShopManager
     @@shops = {}

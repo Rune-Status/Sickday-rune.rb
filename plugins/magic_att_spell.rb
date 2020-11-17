@@ -1,5 +1,4 @@
-require 'xmlsimple'
-require 'pp'
+
 
 rune_data = XmlSimple.xml_in("data/magic_runes.xml", 'KeyToSymbol' => true)[:rune]
 
