@@ -1,15 +1,5 @@
 module RuneRb::World
   class NPCSpawns
-    DIRECTIONS = {
-      :north => [0, 1],
-      :south => [0, -1],
-      :east => [1, 0],
-      :west => [-1, 0],
-      :northeast => [1, 1],
-      :northwest => [-1, 1],
-      :southeast => [1, -1],
-      :southwest => [-1, -1]
-    }
     
     def NPCSpawns.load
       npc = XmlSimple.xml_in("data/npc_spawns.xml")
@@ -27,7 +17,7 @@ module RuneRb::World
       if data.include?('face')
         npc.direction = data['face'].to_sym
         
-        offsets = DIRECTIONS[npc.direction]
+        offsets = RuneRb::World::NPC_DIRECTIONS[npc.direction]
         npc.face(npc.location.transform(offsets[0], offsets[1], 0))
       end
       

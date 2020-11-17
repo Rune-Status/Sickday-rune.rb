@@ -130,6 +130,9 @@ module RuneRb
 
   # The World module provides models for objects used by the game world.
   module World
+    require_relative 'rune/world/constants'
+    include Constants
+
     autoload :Profile,             'rune/world/profile'
     autoload :Pathfinder,          'rune/world/walking'
     autoload :Point,               'rune/world/walking'
