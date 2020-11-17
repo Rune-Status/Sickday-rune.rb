@@ -156,12 +156,12 @@ on_packet(236) {|player, packet|
   
   # Check if this item is a world item
   world_item = false
-  RuneRb::World::ItemSpawns.items.each {|i|
+  WORLD.items.each do |i|
     if !i.picked_up && i.item.id == item_id && i.location == loc
       world_item = true
       item = i
     end
-  }
+  end
   
   if !world_item
     item = WORLD.region_manager.get_surrounding_regions(player.location).inject([]){|all, region| all + region.ground_items}.find {|item|

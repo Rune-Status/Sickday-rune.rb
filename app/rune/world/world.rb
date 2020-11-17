@@ -3,6 +3,7 @@ module RuneRb::World
   class World
     attr :players
     attr :npcs
+    attr :items
     attr :region_manager
     attr :event_manager
     attr :shop_manager
@@ -14,6 +15,7 @@ module RuneRb::World
     def initialize
       @players = []
       @npcs = []
+      @items = []
       @region_manager = RuneRb::Model::RegionManager.new
       @event_manager = RuneRb::Engine::EventManager.new
       @loader = YAMLFileLoader.new
@@ -23,6 +25,15 @@ module RuneRb::World
       @object_manager = RuneRb::Objects::ObjectManager.new
       @door_manager = RuneRb::Doors::DoorManager.new
       register_global_events
+      load_items
+    end
+
+    def load_items
+      RuneRb::Database::LEGACY[:item_spawns].all.each do |item|
+        @items << RuneRb::World::Item.new(item)
+      end
+
+      submit_event(RuneRb::World::ItemEvent.new)
     end
 
     def add_to_login_queue(session)

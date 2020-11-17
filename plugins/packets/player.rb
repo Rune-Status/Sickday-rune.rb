@@ -20,11 +20,11 @@ on_packet(210) {|player, packet|
   }
   
   # Spawn local world items
-  RuneRb::World::ItemSpawns.items.each {|item|
+  WORLD.items.each do |item|
     if !item.picked_up && item.within_distance?(player)
       item.spawn(player)
     end
-  }
+  end
 }
 
 # Player option 1 (Attack)

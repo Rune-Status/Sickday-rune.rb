@@ -91,7 +91,6 @@ module RuneRb
       WORLD.door_manager.load_double_doors
 
       RuneRb::World::NPCSpawns.load
-      RuneRb::World::ItemSpawns.load
     end
 
     # Binds the server socket and begins accepting player connections. Defines Signal traps for `INT` and `TERM` signals to ensure graceful shutdown.

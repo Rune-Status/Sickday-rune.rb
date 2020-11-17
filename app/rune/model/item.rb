@@ -352,7 +352,7 @@ module RuneRb::Item
         
         if existing
           count = item.count + new.count
-          return false if count > MAX_ITEMS or count < 1
+          return false if count > RuneRb::Model::MAX_ITEMS or count < 1
           return true
         end
         get_free_slot != -1

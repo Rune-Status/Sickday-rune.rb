@@ -144,6 +144,7 @@ module RuneRb
     autoload :Profile,             'rune/world/profile'
     autoload :Pathfinder,          'rune/world/walking'
     autoload :Point,               'rune/world/walking'
+    autoload :Item,                'rune/world/item_spawns'
     autoload :World,               'rune/world/world'
     autoload :LoginResult,         'rune/world/world'
     autoload :Loader,              'rune/world/world'
