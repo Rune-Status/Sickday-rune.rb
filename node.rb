@@ -1,7 +1,7 @@
 $:.unshift File.join(File.dirname(__FILE__), "app")
 
 require 'bundler/setup'
-require 'calyx'
+require 'rune'
 
 WORLD = RuneRb::World::World.new
 SERVER = RuneRb::Server.new

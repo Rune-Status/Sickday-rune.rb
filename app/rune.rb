@@ -1,0 +1,127 @@
+require 'logging'
+require 'eventmachine'
+require 'sqlite3'
+require 'rufus/scheduler'
+require 'ostruct'
+
+module RuneRb
+  autoload :Server,             'rune/server'
+
+  module Engine
+    autoload :EventManager,     'rune/core/engine'
+    autoload :Event,            'rune/core/engine'
+    autoload :QueuePolicy,      'rune/core/engine'
+    autoload :WalkablePolicy,   'rune/core/engine'
+    autoload :Action,           'rune/core/engine' # TODO move to Actions
+    autoload :ActionQueue,      'rune/core/engine' # TODO move to Actions
+  end
+
+  module Misc
+    autoload :AutoHash,            'rune/core/util'
+    autoload :HashWrapper,         'rune/core/util'
+    autoload :Flags,               'rune/core/util'
+    autoload :TextUtils,           'rune/core/util'
+    autoload :NameUtils,           'rune/core/util'
+    autoload :ThreadPool,          'rune/core/util'
+    autoload :Cache,               'rune/core/cache'
+  end
+
+  module Actions
+    autoload :HarvestingAction,    'rune/core/actions'
+  end
+
+  module Model
+    autoload :HitType,             'rune/model/combat'
+    autoload :Hit,                 'rune/model/combat'
+    autoload :Damage,              'rune/model/combat'
+    autoload :Animation,           'rune/model/effects'
+    autoload :Graphic,             'rune/model/effects'
+    autoload :ChatMessage,         'rune/model/effects'
+    autoload :Entity,              'rune/model/entity'
+    autoload :Location,            'rune/model/location'
+    autoload :Player,              'rune/model/player'
+    autoload :RegionManager,       'rune/model/region'
+    autoload :Region,              'rune/model/region'
+  end
+
+  module Item
+    autoload :Item,                       'rune/model/item'
+    autoload :ItemDefinition,             'rune/model/item'
+    autoload :Container,                  'rune/model/item'
+    autoload :ContainerListener,          'rune/model/item'
+    autoload :InterfaceContainerListener, 'rune/model/item'
+    autoload :WeightListener,             'rune/model/item'
+    autoload :BonusListener,              'rune/model/item'
+  end
+
+  module NPC
+    autoload :NPC,                 'rune/model/npc'
+    autoload :NPCDefinition,       'rune/model/npc'
+  end
+
+  module Player
+    autoload :Appearance,          'rune/model/player/appearance'
+    autoload :InterfaceState,      'rune/model/player/interfacestate'
+    autoload :RequestManager,      'rune/model/player/requestmanager'
+    autoload :Skills,              'rune/model/player/skills'
+  end
+
+  module Net
+    autoload :ActionSender,        'rune/net/actionsender'
+    autoload :ISAAC,               'rune/net/isaac'
+    autoload :Session,             'rune/net/session'
+    autoload :Connection,          'rune/net/connection'
+    autoload :Packet,              'rune/net/packet'
+    autoload :PacketBuilder,       'rune/net/packetbuilder'
+    autoload :JaggrabConnection,   'rune/net/jaggrab'
+  end
+
+  module GroundItems
+    autoload :GroundItem,          'rune/services/ground_items'
+    autoload :GroundItemEvent,     'rune/services/ground_items'
+    autoload :PickupItemAction,    'rune/services/ground_items'
+  end
+
+  module Shops
+    autoload :ShopManager,         'rune/services/shops'
+    autoload :Shop,                'rune/services/shops'
+  end
+
+  module Objects
+    autoload :ObjectManager,       'rune/services/objects'
+  end
+
+  module Doors
+    autoload :DoorManager,         'rune/services/doors'
+    autoload :Door,                'rune/services/doors'
+    autoload :DoubleDoor,          'rune/services/doors'
+    autoload :DoorEvent,           'rune/services/doors'
+  end
+
+  module Tasks
+    autoload :NPCTickTask,         'rune/tasks/npc_update'
+    autoload :NPCResetTask,        'rune/tasks/npc_update'
+    autoload :NPCUpdateTask,       'rune/tasks/npc_update'
+    autoload :PlayerTickTask,      'rune/tasks/player_update'
+    autoload :PlayerResetTask,     'rune/tasks/player_update'
+    autoload :PlayerUpdateTask,    'rune/tasks/player_update'
+    autoload :SystemUpdateEvent,   'rune/tasks/sysupdate_event'
+    autoload :UpdateEvent,         'rune/tasks/update_event'
+  end
+
+  module World
+    autoload :Profile,             'rune/world/profile'
+    autoload :Pathfinder,          'rune/world/walking'
+    autoload :Point,               'rune/world/walking'
+    autoload :World,               'rune/world/world'
+    autoload :LoginResult,         'rune/world/world'
+    autoload :Loader,              'rune/world/world'
+    autoload :YAMLFileLoader,      'rune/world/world'
+    autoload :NPCSpawns,           'rune/world/npc_spawns'
+    autoload :ItemSpawns,          'rune/world/item_spawns'
+  end
+end
+
+require 'rune/plugin_hooks'
+require 'rune/net/packetloader'
+

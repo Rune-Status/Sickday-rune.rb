@@ -191,7 +191,7 @@ def self.get_player(name)
   WORLD.players.find {|e| e.name.downcase == name.downcase }
 end
 
-@@emotes = {
+{
   161 => 860,
   162 => 857,
   163 => 863,
@@ -220,10 +220,6 @@ end
   6503 => 1130,
   6506 => 1129,
   666 => 1128,
-}
-
-@@emotes.each {|button, anim|
-  on_int_button(button) {|player|
-    player.play_animation RuneRb::Model::Animation.new(anim)
-  }
-}
+}.each do |button, anim|
+  on_int_button(button) { |player| player.play_animation(RuneRb::Model::Animation.new(anim)) }
+end
