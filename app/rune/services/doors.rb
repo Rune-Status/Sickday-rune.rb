@@ -1,67 +1,66 @@
 module RuneRb::Doors
   class DoorManager
-    @@single_data = []
-    @@double_data = []
-    @@open_single_doors = [  
-      1504, 1514, 1517, 1520, 1531,
-      1534, 2033, 2035, 2037, 2998,
-      3271, 4468, 4697, 6101,6103,
-      6105, 6107, 6109, 6111, 6113,
-      6115, 6976, 6978, 8696, 8819,
-      10261, 10263,10265,11708,11710,
-      11712,11715,11994,12445, 13002
-    ]
-    @@open_double_doors = [1520, 1517]
+
+    def initialize
+      @single_data = []
+      @double_data = []
+      @open_single_doors = [
+          1504, 1514, 1517, 1520, 1531,
+          1534, 2033, 2035, 2037, 2998,
+          3271, 4468, 4697, 6101,6103,
+          6105, 6107, 6109, 6111, 6113,
+          6115, 6976, 6978, 8696, 8819,
+          10261, 10263,10265,11708,11710,
+          11712,11715,11994,12445, 13002
+      ]
+      @open_double_doors = [1520, 1517]
+    end
     
     def load_single_doors
-      d = XmlSimple.xml_in("data/doors_single.xml")
-      d["door"].each_with_index {|row, idx|
-        @@single_data << 
-          {
-            :id => row['id'].to_i,
-            :location => RuneRb::Model::Location.new(row['x'].to_i, row['y'].to_i, row['z'].to_i),
-            :face => row['face'].to_i,
-            :type => row['type'].to_i
-          }
-      }
+      RuneRb::Database::LEGACY[:door].all.each do |row|
+        @single_data << { :id => row[:id],
+                          :location => RuneRb::Model::Location.new(row[:x],
+                                                                   row[:y],
+                                                                   row[:z]),
+                          :face => row[:face],
+                          :type => row[:type] }
+      end
       
-      @@single_data.each {|door|
+      @single_data.each do |door|
         handler = HOOKS[:obj_click1][door[:id]]
-        if !handler.instance_of?(Proc)
-          on_obj_option(door[:id]) {|player, loc|
+        unless handler.instance_of?(Proc)
+          on_obj_option(door[:id]) do |player, loc|
             return unless player.location.within_interaction_distance?(loc)
-            
+
             player.walking_queue.reset
             handle_door door[:id], loc
-          }
+          end
         end
-      }
+      end
     end
     
     def load_double_doors
-      d = XmlSimple.xml_in("data/doors_double.xml")
-      d["door"].each_with_index {|row, idx|
-       @@double_data << 
-          {
-           :id => row['id'].to_i,
-           :location => RuneRb::Model::Location.new(row['x'].to_i, row['y'].to_i, row['z'].to_i),
-           :face => row['face'].to_i,
-           :type => 0
-          }
-      }
+      RuneRb::Database::LEGACY[:double_door].all.each do |row|
+        @double_data << { :id => row[:id],
+                          :location => RuneRb::Model::Location.new(row[:x],
+                                                                   row[:y],
+                                                                   row[:z]),
+                          :face => row[:face],
+                          :type => 0 }
+      end
       
-      @@double_data.each {|door|
+      @double_data.each do |door|
         handler = HOOKS[:obj_click1][door[:id]]
-          
-        if !handler.instance_of?(Proc)
-          on_obj_option(door[:id]) {|player, loc|
+
+        unless handler.instance_of?(Proc)
+          on_obj_option(door[:id]) do |player, loc|
             return unless player.location.within_interaction_distance?(loc)
-            
+
             player.walking_queue.reset
             handle_double_door door[:id], loc
-          }
+          end
         end
-      }
+      end
     end
     
     def handle_door(id, loc)
@@ -76,7 +75,7 @@ module RuneRb::Doors
         data = get_data id, loc
         return unless data != nil
       
-        open = @@open_single_doors.find {|val| val == id} != nil
+        open = @open_single_doors.find {|val| val == id} != nil
         
         # Change door for the first time
         WORLD.object_manager.objects << door = Door.new(data, open)
@@ -143,17 +142,17 @@ module RuneRb::Doors
         
         WORLD.object_manager.objects.delete door
       else
-        data = DoorManager.get_double_data id, loc
+        data = WORLD.door_manager.get_double_data id, loc
         return unless data != nil
       
-        open = @@open_double_doors.find {|val| val == id} != nil
+        open = @open_double_doors.find {|val| val == id} != nil
         
         # Change door for the first time
         WORLD.object_manager.objects << door = DoubleDoor.new(data, open)
       end
     end
     
-    def self.change_double_state(door)
+    def change_double_state(door)
       # Left
       x_off = 0
       y_off = 0
@@ -235,11 +234,11 @@ module RuneRb::Doors
     end
     
     def get_data(id, loc)
-      @@single_data.find {|door| door[:id] == id && door[:location] == loc }
+      @single_data.find { |door| door[:id] == id && door[:location] == loc }
     end
     
-    def self.get_double_data(id, loc)
-      @@double_data.find {|door| door[:id] == id && door[:location] == loc }
+    def get_double_data(id, loc)
+      @double_data.find { |door| door[:id] == id && door[:location] == loc }
     end
   end
   
@@ -306,8 +305,8 @@ module RuneRb::Doors
       temp_l = RuneRb::Model::Location.new(data[:location].x+l_x_off, data[:location].y+l_y_off, data[:location].z)
       temp_r = RuneRb::Model::Location.new(data[:location].x+r_x_off, data[:location].y+r_y_off, data[:location].z)
       
-      l_data = DoorManager.get_double_data((data[:id]+l_id_off), temp_l)
-      r_data = DoorManager.get_double_data((data[:id]+r_id_off), temp_r)
+      l_data = WORLD.door_manager.get_double_data((data[:id]+l_id_off), temp_l)
+      r_data = WORLD.door_manager.get_double_data((data[:id]+r_id_off), temp_r)
 
       if l_data != nil
         @id = l_data[:id]
@@ -327,7 +326,7 @@ module RuneRb::Doors
         @r_door_orig_location = RuneRb::Model::Location.new(@r_door_location.x, @r_door_location.y, @r_door_location.z)
         @r_door_orig_face = @r_door_face
         
-        DoorManager.change_double_state self
+        WORLD.door_manager.change_double_state(self)
       end
       
       if r_data != nil
@@ -348,7 +347,7 @@ module RuneRb::Doors
         @r_door_orig_location = RuneRb::Model::Location.new(@r_door_location.x, @r_door_location.y, @r_door_location.z)
         @r_door_orig_face = @r_door_face
         
-        DoorManager.change_double_state self
+        WORLD.door_manager.change_double_state(self)
       end
     end
     

@@ -1,5 +1,6 @@
 require 'logging'
 require 'eventmachine'
+require 'sequel'
 require 'socket'
 require 'sqlite3'
 require 'rufus/scheduler'
@@ -8,6 +9,7 @@ require 'yaml'
 require 'shellwords'
 require 'xmlsimple'
 require 'pp'
+require 'pry'
 require 'to_regexp'
 
 # Top-Level namespace
@@ -148,6 +150,13 @@ module RuneRb
     autoload :YAMLFileLoader,      'rune/world/world'
     autoload :NPCSpawns,           'rune/world/npc_spawns'
     autoload :ItemSpawns,          'rune/world/item_spawns'
+  end
+
+  # The Database module provides database connectivity and models
+  module Database
+    require_relative 'rune/db/connection'
+    include Connection
+
   end
 end
 

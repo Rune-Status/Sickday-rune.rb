@@ -3,6 +3,9 @@ source 'https://rubygems.org'
 ##
 # Development Gems
 group :dev do
+  gem 'pg'
+  gem 'pry'
+  gem 'sequel'
   gem 'yard'
 end
 
