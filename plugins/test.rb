@@ -5,13 +5,13 @@ on_int_button(2458) {|player|
 }
 
 on_command("objspawn") {|player, params|
- temp_loc = player.location
-  
- object = RuneRb::Objects::Object.new(params[0].to_i, temp_loc, 2, params[1].to_i, -1, temp_loc, 0, params[2].to_i)
- object.change 
- 
- # Add this to the object manager
- WORLD.object_manager.objects << object
+  temp_loc = player.location
+
+  object = RuneRb::Objects::Object.new(params[0].to_i, temp_loc, 2, params[1].to_i, -1, temp_loc, 0, params[2].to_i)
+  object.change
+
+  # Add this to the object manager
+  WORLD.object_manager.objects << object
 }
 
 # Testing
@@ -31,11 +31,11 @@ on_command("dc") {|player, params|
 }
 
 on_command("goup") {|player, params|
-  player.teleport_location = player.location.transform(0, 0, 1)  
+  player.teleport_location = player.location.transform(0, 0, 1)
 }
 
 on_command("godown") {|player, params|
-  player.teleport_location = player.location.transform(0, 0, -1)  
+  player.teleport_location = player.location.transform(0, 0, -1)
 }
 
 on_command("item") {|player, params|
@@ -49,12 +49,12 @@ on_command("design") {|player, params|
 }
 
 on_item_on_player(1050) {|player, used_player|
-   player.io.send_message "You used 1050 on a player"
-   used_player.io.send_message "someone used you" 
+  player.io.send_message "You used 1050 on a player"
+  used_player.io.send_message "someone used you"
 }
 
 on_item_on_npc(1050, 1) {|player, npc|
-   player.io.send_message "You used a santa on an npc" 
+  player.io.send_message "You used a santa on an npc"
 }
 
 on_int_button(3651) {|player|
@@ -62,17 +62,22 @@ on_int_button(3651) {|player|
 }
 
 on_command("reload") {|player, params|
-  player.io.send_message "Reloading..." 
+  player.io.send_message "Reloading..."
   SERVER.reload
 }
 
-on_command("spawn") {|player, params|
-   id = params[0].to_i
-   npc = RuneRb::NPC::NPC.new RuneRb::NPC::NPCDefinition.for_id(id)
-   npc.location = player.location.transform(1, 1, 0)
-   
-   WORLD.register_npc npc
-}
+on_command("spawn") do |player, params|
+  data = {}.tap do |hash|
+    hash[:mob_id] = params[0].to_i
+    hash[:shop_id] = params[1].to_i if params.size > 0
+    hash[:x] = player.location.x + 1
+    hash[:y] = player.location.y + 1
+    hash[:z] = player.location.z + 0
+    hash[:face] = :north
+  end
+  WORLD.spawn_mob(data, data[:shop_id])
+end
+
 
 on_command("cfg") {|player, params|
   id = params[0].to_i
@@ -155,7 +160,7 @@ on_command("g") {|player, params|
   x = player.location.x + 1
   y = player.location.y
   z = player.location.z
-  
+
   player.face RuneRb::Model::Location.new(x, y, z)
 }
 
@@ -195,34 +200,34 @@ def self.get_player(name)
 end
 
 {
-  161 => 860,
-  162 => 857,
-  163 => 863,
-  164 => 858,
-  165 => 859,
-  166 => 866,
-  167 => 864,
-  168 => 855,
-  169 => 856,
-  170 => 861,
-  171 => 862,
-  172 => 865,
-  13362 => 2105,
-  13363 => 2106,
-  13364 => 2107,
-  13365 => 2108,
-  13366 => 2109,
-  13367 => 2110,
-  13368 => 2111,
-  13383 => 2127,
-  13384 => 2128,
-  13369 => 2112,
-  13370 => 2113,
-  11100 => 1368,
-  667 => 1131,
-  6503 => 1130,
-  6506 => 1129,
-  666 => 1128,
+    161 => 860,
+    162 => 857,
+    163 => 863,
+    164 => 858,
+    165 => 859,
+    166 => 866,
+    167 => 864,
+    168 => 855,
+    169 => 856,
+    170 => 861,
+    171 => 862,
+    172 => 865,
+    13362 => 2105,
+    13363 => 2106,
+    13364 => 2107,
+    13365 => 2108,
+    13366 => 2109,
+    13367 => 2110,
+    13368 => 2111,
+    13383 => 2127,
+    13384 => 2128,
+    13369 => 2112,
+    13370 => 2113,
+    11100 => 1368,
+    667 => 1131,
+    6503 => 1130,
+    6506 => 1129,
+    666 => 1128,
 }.each do |button, anim|
   on_int_button(button) { |player| player.play_animation(RuneRb::Model::Animation.new(anim)) }
 end

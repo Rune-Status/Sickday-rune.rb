@@ -47,8 +47,8 @@ module RuneRb::Model
     attr :var   # non-persistent data
     attr :varp  # persistent data
     
-    def initialize(session)
-      super()
+    def initialize(session, world)
+      super(world)
       @connection = session.connection
       @session = session
       @in_cipher = session.in_cipher

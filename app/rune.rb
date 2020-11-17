@@ -150,7 +150,6 @@ module RuneRb
     autoload :LoginResult,         'rune/world/world'
     autoload :Loader,              'rune/world/world'
     autoload :YAMLFileLoader,      'rune/world/world'
-    autoload :NPCSpawns,           'rune/world/npc_spawns'
     autoload :ItemSpawns,          'rune/world/item_spawns'
   end
 

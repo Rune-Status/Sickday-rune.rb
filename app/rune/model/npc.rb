@@ -3,8 +3,8 @@ module RuneRb::NPC
     attr :definition
     attr_accessor :direction
     
-    def initialize(definition)
-      super()
+    def initialize(definition, world)
+      super(world)
       @definition = definition
     end
     
@@ -16,19 +16,19 @@ module RuneRb::NPC
       region.npcs.delete self
     end
   end
-  
+
   class NPCDefinition
     @@definitions = []
-    
+
     attr :id
     attr_reader :properties
-    
+
     def initialize(id)
       @id = id
     end
-    
+
     def NPCDefinition.for_id(id)
-      NPCDefinition.new id
+      RuneRb::NPC::NPCDefinition.new(id)
     end
   end
 end

@@ -27,18 +27,18 @@ module RuneRb::World
       @object_manager = RuneRb::Objects::ObjectManager.new
       @door_manager = RuneRb::Doors::DoorManager.new
       register_global_events
-      load_items
+      load_item_spawns
       load_shops
       load_doors
+      load_mob_spawns
     end
 
-    def load_items
+    def load_item_spawns
       RuneRb::Database::LEGACY[:item_spawns].all.each do |item|
         @items << RuneRb::World::Item.new(item)
       end
 
       submit_event(RuneRb::World::ItemEvent.new)
-      puts 'Loaded World Items'
     end
 
     def load_shops
@@ -54,15 +54,24 @@ module RuneRb::World
           end
         end
       end
-      puts 'Loaded Shops'
     end
 
     def load_doors
       @door_manager.load_single_doors
       @door_manager.load_double_doors
-      puts 'Loaded Doors'
     rescue StandardError => e
       puts 'An error occurred while loading Doors!'
+      puts e
+      puts e.backtrace
+    end
+
+    def load_mob_spawns
+      RuneRb::Database::LEGACY[:mob_spawns].all.each do |row|
+        spawn_mob(row, row[:shop_id] || nil)
+      end
+      puts 'Loaded Mob Spawns'
+    rescue StandardError => e
+      puts 'An error occurred while spawning Mobs!'
       puts e
       puts e.backtrace
     end
@@ -74,7 +83,7 @@ module RuneRb::World
 
         # New login, so try loading profile
         if response == 2 && !@loader.load_profile(lr.player)
-         response = 13
+          response = 13
         end
 
         unless response == 2
@@ -131,10 +140,10 @@ module RuneRb::World
         player.destroy
         player.connection.close_connection_after_writing
         @players.delete(player) if single
-		    submit_work {
-		      @loader.save_profile(player)
-		    }
-		  end
+        submit_work {
+          @loader.save_profile(player)
+        }
+      end
     end
 
     def register_npc(npc)
@@ -151,6 +160,22 @@ module RuneRb::World
 
     def submit_event(event)
       @event_manager.submit event
+    end
+
+    def spawn_mob(data, shop = nil)
+      npc = RuneRb::NPC::NPC.new(RuneRb::NPC::NPCDefinition.for_id(data[:mob_id]), self)
+      npc.location = RuneRb::Model::Location.new(data[:x], data[:y], data[:z])
+      npc.direction = data[:face]&.to_sym || :north
+      offsets = RuneRb::World::NPC_DIRECTIONS[npc.direction]
+      npc.face(npc.location.transform(offsets[0], offsets[1], 0))
+      register_npc(npc)
+      # Add shop hook if NPC owns a shop
+      return unless shop && !HOOKS[:npc_option2][data[:mob_id]].is_a?(Proc)
+
+      on_npc_option2(data[:mob_id]) do |player, npc|
+        WORLD.shop_manager.open(data[:shop_id], player)
+        player.interacting_entity = npc
+      end
     end
 
     private
@@ -196,7 +221,7 @@ module RuneRb::World
 
       if existing.nil?
         # no existing user with this name, new login
-        return LoginResult.new(2, RuneRb::Model::Player.new(session))
+        return LoginResult.new(2, RuneRb::Model::Player.new(session, WORLD))
       else
         # existing user = already logged in
         return LoginResult.new(5, nil)
@@ -208,10 +233,10 @@ module RuneRb::World
         key = RuneRb::Misc::NameUtils.format_name_protocol(player.name)
 
         profile = if FileTest.exists?("./data/profiles/#{key}.yaml")
-          YAML::load(File.open("./data/profiles/#{key}.yaml"))
-        else
-          nil
-        end
+                    YAML::load(File.open("./data/profiles/#{key}.yaml"))
+                  else
+                    nil
+                  end
 
         RuneRb::World::PROFILE_LOG.info "Retrieving profile: #{key}"
 

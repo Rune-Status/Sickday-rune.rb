@@ -7,22 +7,26 @@ module RuneRb::Model
       @active_regions = []
     end
 
-    def get_local_players(ref, check_distance=true)
+    def get_local_players(ref, check_distance = true)
       loc = ref.is_a?(Location) ? ref : ref.location
 
-      get_surrounding_regions(loc).inject([]){|players, region|
+      get_surrounding_regions(loc).each_with_object([]) do |region, players|
         if check_distance
-          players + region.players.select {|p| p.location.within_distance?(loc) }
+          region.players.each do |player|
+            players << player if player.location.within_distance?(loc)
+          end
         else
-          players + region.players
+          region.players.each { |player| players << player }
         end
-      }
+      end
     end
 
     def get_local_npcs(entity)
-      get_surrounding_regions(entity.location).inject([]) {|npcs, region|
-        npcs + region.npcs.select {|n| n.location.within_distance?(entity.location) }
-      }
+      get_surrounding_regions(entity.location).each_with_object([]) do |region, npcs|
+        region.npcs.each do |n|
+          npcs << n if n.location.within_distance?(entity.location)
+        end
+      end
     end
 
     def get_surrounding_regions(location)

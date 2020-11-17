@@ -46,7 +46,6 @@ module RuneRb
       load_int_hooks
       load_defs
       load_hooks
-      load_config
       bind
     end
 
@@ -82,11 +81,6 @@ module RuneRb
 
       # Equipment
       RuneRb::Equipment.load
-    end
-
-    # Attempts to load configuration files and definitions for Doors, Shops, NPCSpawns, and ItemSpawns.
-    def load_config
-      RuneRb::World::NPCSpawns.load
     end
 
     # Binds the server socket and begins accepting player connections. Defines Signal traps for `INT` and `TERM` signals to ensure graceful shutdown.

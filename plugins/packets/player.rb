@@ -7,23 +7,17 @@ on_packet(202) {|player, packet|
 on_packet(210) {|player, packet|
   # Update objects
   WORLD.object_manager.objects.each {|object|
-    if object.location.within_distance?(player.location)
-      object.change(player)
-    end
+    object.change(player) if object.location.within_distance?(player.location)
   }
-  
+
   # Update NPC faces
-  WORLD.region_manager.get_local_npcs(player).each {|npc|
-    if npc.direction != nil
-      npc.flags.flag :face_coord
-    end
-  }
-  
+  WORLD.region_manager.get_local_npcs(player).each do |npc|
+    npc.flags.flag(:face_coord) unless npc.direction.nil?
+  end
+
   # Spawn local world items
   WORLD.items.each do |item|
-    if !item.picked_up && item.within_distance?(player)
-      item.spawn(player)
-    end
+    item.spawn(player) if !item.picked_up && item.within_distance?(player)
   end
 }
 
@@ -33,7 +27,7 @@ on_packet(128) {|player, packet|
   raise "invalid player index: #{id}" unless (0...2000) === id
   
   victim = WORLD.players[id-1]
-  if victim != nil && player.location.within_interaction_distance?(victim.location)
+  if !victim.nil? && player.location.within_interaction_distance?(victim.location)
     player.action_queue << AttackAction.new(player, victim)
   end
 }
