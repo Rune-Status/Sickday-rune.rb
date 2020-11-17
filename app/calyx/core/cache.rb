@@ -1,4 +1,4 @@
-module Calyx::Misc
+module RuneRb::Misc
   class Cache
     INDEX_SIZE = 6
     DATA_BLOCK_SIZE = 512

@@ -1,4 +1,4 @@
-module Calyx::Net
+module RuneRb::Net
   class ActionSender
     SIDEBAR_INTERFACES = [
       [1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 0],
@@ -15,7 +15,7 @@ module Calyx::Net
       send_details
       
       # temp
-      send_message("Welcome to Calyx.");
+      send_message("Welcome to RuneRb.");
       
       send_map_region
       send_skills
@@ -54,7 +54,7 @@ module Calyx::Net
     
     # Update all player skills.
     def send_skills
-      Calyx::Player::Skills::SKILLS.each {|s|
+      RuneRb::Player::Skills::SKILLS.each {|s|
         send_skill s
       }
       self
@@ -63,7 +63,7 @@ module Calyx::Net
     # Send a specific skill update.
     def send_skill(skill)
       bldr = PacketBuilder.new(134)
-      bldr.add_byte Calyx::Player::Skills::SKILLS.index(skill)
+      bldr.add_byte RuneRb::Player::Skills::SKILLS.index(skill)
       bldr.add_int1 @player.skills.exps[skill]
       bldr.add_byte @player.skills.skills[skill]
       

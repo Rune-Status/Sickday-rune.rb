@@ -1,6 +1,6 @@
-module Calyx::Model
+module RuneRb::Model
   class Entity
-    DEFAULT_LOCATION = Calyx::Model::Location.new 2887, 10224, 0
+    DEFAULT_LOCATION = RuneRb::Model::Location.new 2887, 10224, 0
     
     # Info
     attr :id
@@ -41,9 +41,9 @@ module Calyx::Model
     attr_accessor :cached_update
     
     def initialize
-      @flags = Calyx::Misc::Flags.new
+      @flags = RuneRb::Misc::Flags.new
       @agressor = false
-      @cool_downs = Calyx::Misc::Flags.new
+      @cool_downs = RuneRb::Misc::Flags.new
       @local_players = []
       @local_npcs = []
       @sprites = Array.new(2, -1)
@@ -52,7 +52,7 @@ module Calyx::Model
       @last_location = @location
       @region_change = false
       @teleporting = false
-      @walking_queue = Calyx::World::Pathfinder.new self
+      @walking_queue = RuneRb::World::Pathfinder.new self
       
       @forced_chat_msg = ""
       

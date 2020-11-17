@@ -1,4 +1,4 @@
-module Calyx::Tasks
+module RuneRb::Tasks
   class PlayerTickTask
     attr :player
     
@@ -47,8 +47,8 @@ module Calyx::Tasks
     def execute
       @player.io.send_map_region if @player.region_change
       
-      update_block = Calyx::Net::PacketBuilder.new
-      packet = Calyx::Net::PacketBuilder.new(81, :VARSH)
+      update_block = RuneRb::Net::PacketBuilder.new
+      packet = RuneRb::Net::PacketBuilder.new(81, :VARSH)
       packet.start_bit_access
       
       # Update current player
@@ -157,7 +157,7 @@ module Calyx::Tasks
     def append_chat(p, block)
       msg = p.current_chat_message
       block.add_leshort((msg.color << 8).ubyte | msg.effects.ubyte)
-      block.add_byte Calyx::World::RIGHTS.index(p.rights)
+      block.add_byte RuneRb::World::RIGHTS.index(p.rights)
       block.add_byte_c msg.text.size
       block.add_bytes msg.text.reverse
     end
@@ -171,7 +171,7 @@ module Calyx::Tasks
       eq = p.equipment
       
       # Create the player properties
-      props = Calyx::Net::PacketBuilder.new
+      props = RuneRb::Net::PacketBuilder.new
       props.add_byte app.gender # gender
       props.add_byte 0 # icon
       
@@ -202,7 +202,7 @@ module Calyx::Tasks
         end
         
         # Arms (shown unless a platebody is worn)
-        if eq.is_slot_used(4) && Calyx::Equipment.is(eq.items[4], 10)
+        if eq.is_slot_used(4) && RuneRb::Equipment.is(eq.items[4], 10)
           props.add_short (0x200 + eq.items[4].id).short
         else
           props.add_short (0x100 + app.arms).short
@@ -216,7 +216,7 @@ module Calyx::Tasks
         end
         
         # Head (shown unless a full helm or mask is worn)
-        if eq.is_slot_used(0) && (Calyx::Equipment.is(eq.items[0], 11) || Calyx::Equipment.is(eq.items[0], 12))
+        if eq.is_slot_used(0) && (RuneRb::Equipment.is(eq.items[0], 11) || RuneRb::Equipment.is(eq.items[0], 12))
           props.add_byte 0
         else
           props.add_short (0x100 + app.head).short
@@ -237,7 +237,7 @@ module Calyx::Tasks
         end
         
         # Beard
-        fullhelm = eq.is_slot_used(0) && (Calyx::Equipment.is(eq.items[0], 11) || Calyx::Equipment.is(eq.items[0], 12))
+        fullhelm = eq.is_slot_used(0) && (RuneRb::Equipment.is(eq.items[0], 11) || RuneRb::Equipment.is(eq.items[0], 12))
         
         if fullhelm || app.gender == 1
           props.add_byte 0
@@ -263,7 +263,7 @@ module Calyx::Tasks
       props.add_short 0x338       # run
       
       # Details
-      props.add_long Calyx::Misc::NameUtils.name_to_long(p.name)
+      props.add_long RuneRb::Misc::NameUtils.name_to_long(p.name)
       props.add_byte p.skills.combat_level
       props.add_short 0
       
@@ -304,7 +304,7 @@ module Calyx::Tasks
       end
       
       # Otherwise build a new one
-      block = Calyx::Net::PacketBuilder.new
+      block = RuneRb::Net::PacketBuilder.new
       flags = p.flags
       mask = 0
       

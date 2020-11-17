@@ -1,4 +1,4 @@
-module Calyx::World
+module RuneRb::World
   class NPCSpawns
     DIRECTIONS = {
       :north => [0, 1],
@@ -19,8 +19,8 @@ module Calyx::World
     end
     
     def NPCSpawns.spawn(data)
-      npc = Calyx::NPC::NPC.new Calyx::NPC::NPCDefinition.for_id(data['id'].to_i)
-      npc.location = Calyx::Model::Location.new(data['x'].to_i, data['y'].to_i, data['z'].to_i)
+      npc = RuneRb::NPC::NPC.new RuneRb::NPC::NPCDefinition.for_id(data['id'].to_i)
+      npc.location = RuneRb::Model::Location.new(data['x'].to_i, data['y'].to_i, data['z'].to_i)
         
       WORLD.register_npc npc
       
@@ -37,7 +37,7 @@ module Calyx::World
 
         if !handler.instance_of?(Proc)
           on_npc_option2(data['id'].to_i) {|player, npc|
-            Calyx::Shops::ShopManager.open(data['shop'].to_i, player)
+            RuneRb::Shops::ShopManager.open(data['shop'].to_i, player)
             player.interacting_entity = npc
           }
         end

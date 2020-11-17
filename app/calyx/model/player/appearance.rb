@@ -1,4 +1,4 @@
-module Calyx::Player
+module RuneRb::Player
   # Appearance of the player
   class Appearance
     @@types = [

@@ -51,7 +51,7 @@ module Woodcutting
     }
   }
   
-  class WoodcuttingAction < Calyx::Actions::HarvestingAction
+  class WoodcuttingAction < RuneRb::Actions::HarvestingAction
     attr_accessor :cycle_count
     attr_accessor :tree
     attr_accessor :axe
@@ -97,11 +97,11 @@ module Woodcutting
       @cycle_count.to_i
     end
     
-    def harvested_item; Calyx::Item::Item.new(@tree.log, 1) end
+    def harvested_item; RuneRb::Item::Item.new(@tree.log, 1) end
     
     def experience; @tree.xp end
     
-    def animation; Calyx::World::Animation.new(@axe[:anim]) end
+    def animation; RuneRb::World::Animation.new(@axe[:anim]) end
     
     def skill; :woodcutting end
     
@@ -118,7 +118,7 @@ module Woodcutting
     on_obj_option(id) {|player, loc|
       player.io.send_message loc.to_s
     
-      object = Calyx::Objects::Object.new(1342, loc, 0, 10, 1278, loc, 0, 3)
+      object = RuneRb::Objects::Object.new(1342, loc, 0, 10, 1278, loc, 0, 3)
       object.change
       
       # Add this to the object manager

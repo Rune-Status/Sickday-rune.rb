@@ -6,8 +6,8 @@ def on_packet(*ids, &block)
   }
 end
 
-module Calyx
-  module Calyx::Net
+module RuneRb
+  module RuneRb::Net
     def Net.load_packets
       # Reset old packet handlers
       PACKETS.clear
@@ -40,5 +40,5 @@ module Calyx
   end
 end
 
-Calyx::Net.load_packets
+RuneRb::Net.load_packets
 

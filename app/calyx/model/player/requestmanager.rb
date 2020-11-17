@@ -1,4 +1,4 @@
-module Calyx::Player
+module RuneRb::Player
   class RequestManager
     REQUESTS = { :trade => "tradereq", :duel => "duelreq" }
     attr_accessor :request_type

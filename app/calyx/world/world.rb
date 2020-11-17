@@ -1,6 +1,6 @@
 require 'yaml'
 
-module Calyx::World
+module RuneRb::World
   RIGHTS = [:player, :mod, :admin, :owner]
   
   PROFILE_LOG = Logging.logger['profile']
@@ -20,14 +20,14 @@ module Calyx::World
     def initialize
       @players = []
       @npcs = []
-      @region_manager = Calyx::Model::RegionManager.new
-      @event_manager = Calyx::Engine::EventManager.new
+      @region_manager = RuneRb::Model::RegionManager.new
+      @event_manager = RuneRb::Engine::EventManager.new
       @loader = YAMLFileLoader.new
-      @task_thread = Calyx::Misc::ThreadPool.new(1)
-      @work_thread = Calyx::Misc::ThreadPool.new(1)
-      @shop_manager = Calyx::Shops::ShopManager.new
-      @object_manager = Calyx::Objects::ObjectManager.new
-      @door_manager = Calyx::Doors::DoorManager.new
+      @task_thread = RuneRb::Misc::ThreadPool.new(1)
+      @work_thread = RuneRb::Misc::ThreadPool.new(1)
+      @shop_manager = RuneRb::Shops::ShopManager.new
+      @object_manager = RuneRb::Objects::ObjectManager.new
+      @door_manager = RuneRb::Doors::DoorManager.new
       register_global_events
     end
     
@@ -42,7 +42,7 @@ module Calyx::World
         end
         
         unless response == 2
-          bldr = Calyx::Net::PacketBuilder.new(-1, :RAW)
+          bldr = RuneRb::Net::PacketBuilder.new(-1, :RAW)
           bldr.add_byte response
           session.connection.send_data bldr.to_packet
           session.connection.close_connection true
@@ -60,9 +60,9 @@ module Calyx::World
       player.index = (@players << player).index(player) + 1
       
       # Send login response
-      bldr = Calyx::Net::PacketBuilder.new(-1, :RAW)
+      bldr = RuneRb::Net::PacketBuilder.new(-1, :RAW)
       
-      rights = Calyx::World::RIGHTS.index(player.rights)
+      rights = RuneRb::World::RIGHTS.index(player.rights)
       bldr.add_byte 2
       bldr.add_byte (rights > 2 ? 2 : rights)
       bldr.add_byte 0
@@ -120,8 +120,8 @@ module Calyx::World
     private
     
     def register_global_events
-      submit_event Calyx::Tasks::UpdateEvent.new
-      submit_event Calyx::Objects::ObjectEvent.new
+      submit_event RuneRb::Tasks::UpdateEvent.new
+      submit_event RuneRb::Objects::ObjectEvent.new
     end
   end
   
@@ -160,7 +160,7 @@ module Calyx::World
       
       if existing == nil
         # no existing user with this name, new login
-        return LoginResult.new(2, Calyx::Model::Player.new(session))
+        return LoginResult.new(2, RuneRb::Model::Player.new(session))
       else
         # existing user = already logged in
         return LoginResult.new(5, nil)
@@ -169,7 +169,7 @@ module Calyx::World
     
     def load_profile(player)
       begin
-        key = Calyx::Misc::NameUtils.format_name_protocol(player.name)
+        key = RuneRb::Misc::NameUtils.format_name_protocol(player.name)
         
         profile = if FileTest.exists?("./data/profiles/#{key}.yaml")
           YAML::load(File.open("./data/profiles/#{key}.yaml"))
@@ -182,7 +182,7 @@ module Calyx::World
         if profile == nil
           default_profile(player)
         else
-          player.rights = Calyx::World::RIGHTS[2] #Calyx::World::RIGHTS[profile.rights] || :player
+          player.rights = RuneRb::World::RIGHTS[2] #RuneRb::World::RIGHTS[profile.rights] || :player
           player.members = profile.member
           player.appearance.set_look profile.appearance
           decode_container(player.equipment, profile.equipment)
@@ -191,7 +191,7 @@ module Calyx::World
           decode_skills(player.skills, profile.skills)
           player.varp.friends = profile.friends
           player.varp.ignores = profile.ignores
-          player.location = Calyx::Model::Location.new(profile.x, profile.y, profile.z)
+          player.location = RuneRb::Model::Location.new(profile.x, profile.y, profile.z)
           player.settings = profile.settings || {}
         end
       rescue Exception => e
@@ -204,7 +204,7 @@ module Calyx::World
     end
     
     def save_profile(player)
-      key = Calyx::Misc::NameUtils.format_name_protocol(player.name)
+      key = RuneRb::Misc::NameUtils.format_name_protocol(player.name)
       
       PROFILE_LOG.info "Storing profile: #{key}"
       
@@ -212,7 +212,7 @@ module Calyx::World
       profile.hash = player.name_long
       profile.banned = false
       profile.member = player.members
-      #profile.rights = Calyx::World::RIGHTS.index(player.rights)
+      #profile.rights = RuneRb::World::RIGHTS.index(player.rights)
       profile.x = player.location.x
       profile.y = player.location.y
       profile.z = player.location.z
@@ -234,14 +234,14 @@ module Calyx::World
     end
     
     def encode_skills(skills)
-      Calyx::Player::Skills::SKILLS.inject([]){|arr, sk|
+      RuneRb::Player::Skills::SKILLS.inject([]){|arr, sk|
         arr << [skills.skills[sk], skills.exps[sk]]
       }
     end
     
     def decode_skills(skills, data)
       data.each_with_index {|val, i|
-        skills.set_skill Calyx::Player::Skills::SKILLS[i], val[0], val[1], false
+        skills.set_skill RuneRb::Player::Skills::SKILLS[i], val[0], val[1], false
       }
     end
     
@@ -257,12 +257,12 @@ module Calyx::World
     
     def decode_container(container, arr)
       arr.each_with_index {|val, i|
-        container.set i, (val[0] == -1 ? nil : Calyx::Item::Item.new(val[0], val[1]))
+        container.set i, (val[0] == -1 ? nil : RuneRb::Item::Item.new(val[0], val[1]))
       }
     end
     
     def default_profile(player)
-      player.location = Calyx::Model::Location.new(3232, 3232, 0)
+      player.location = RuneRb::Model::Location.new(3232, 3232, 0)
       player.rights = :admin
     end
     

@@ -1,7 +1,7 @@
 require 'to_regexp'
 require 'xmlsimple'
 
-module Calyx::Equipment
+module RuneRb::Equipment
   SIDEBARS ||= {}
   SLOTS ||= []
   EXCEPTIONS ||= []
@@ -80,7 +80,7 @@ module Calyx::Equipment
    end
   end
   
-  class AppearanceContainerListener < Calyx::Item::ContainerListener
+  class AppearanceContainerListener < RuneRb::Item::ContainerListener
     attr :player
     
     def initialize(player)
@@ -100,7 +100,7 @@ module Calyx::Equipment
     end
   end
   
-  class SidebarContainerListener < Calyx::Item::ContainerListener
+  class SidebarContainerListener < RuneRb::Item::ContainerListener
     MATERIALS ||= [
       "Iron", "Steel", "Scythe", "Black", "Mithril", "Adamant",
       "Rune", "Granite", "Dragon", "Crystal", "Bronze"
@@ -175,32 +175,32 @@ on_player_login(:equipment) {|player|
   player.io.send_sidebar_interfaces
   
   # Register equipment container listeners
-  player.equipment.add_listener Calyx::Item::InterfaceContainerListener.new(player, 1688)
-  player.equipment.add_listener Calyx::Equipment::AppearanceContainerListener.new(player)
-  player.equipment.add_listener Calyx::Equipment::SidebarContainerListener.new(player)
-  player.equipment.add_listener Calyx::Item::WeightListener.new(player)
-  player.equipment.add_listener Calyx::Item::BonusListener.new(player)
+  player.equipment.add_listener RuneRb::Item::InterfaceContainerListener.new(player, 1688)
+  player.equipment.add_listener RuneRb::Equipment::AppearanceContainerListener.new(player)
+  player.equipment.add_listener RuneRb::Equipment::SidebarContainerListener.new(player)
+  player.equipment.add_listener RuneRb::Item::WeightListener.new(player)
+  player.equipment.add_listener RuneRb::Item::BonusListener.new(player)
 }
 
 # Wield item
 on_item_wield(3214) {|player, item, slot, name, id|
   if id == 4079 # Loop yo-yo
-    player.play_animation Calyx::Model::Animation.new(1458) 
+    player.play_animation RuneRb::Model::Animation.new(1458)
   elsif id == 6865 # Walk Marrionette(blue)
-    player.play_animation Calyx::Model::Animation.new(3004)
-    player.play_graphic Calyx::Model::Graphic.new(512, 2)
+    player.play_animation RuneRb::Model::Animation.new(3004)
+    player.play_graphic RuneRb::Model::Graphic.new(512, 2)
   elsif id == 6866 # Walk Marrionette(green)
-    player.play_animation Calyx::Model::Animation.new(3004)
-    player.play_graphic Calyx::Model::Graphic.new(516, 2)
+    player.play_animation RuneRb::Model::Animation.new(3004)
+    player.play_graphic RuneRb::Model::Graphic.new(516, 2)
   elsif id == 6867 # Walk Marrionette(red)
-    player.play_animation Calyx::Model::Animation.new(3004)
-    player.play_graphic Calyx::Model::Graphic.new(508, 2)
+    player.play_animation RuneRb::Model::Animation.new(3004)
+    player.play_graphic RuneRb::Model::Graphic.new(508, 2)
   else
-    Calyx::Equipment.equip player, item, slot, name, id
+    RuneRb::Equipment.equip player, item, slot, name, id
   end
 }
 
 # Unwield item
 on_item_option(1688) {|player, id, slot|
-  Calyx::Item::Container.transfer player.equipment, player.inventory, slot, id
+  RuneRb::Item::Container.transfer player.equipment, player.inventory, slot, id
 }

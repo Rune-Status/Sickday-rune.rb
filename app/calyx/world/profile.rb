@@ -1,4 +1,4 @@
-module Calyx::World
+module RuneRb::World
   class Profile
     #include MongoMapper::Document
     

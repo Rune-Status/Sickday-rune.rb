@@ -1,4 +1,4 @@
-module Calyx::Model
+module RuneRb::Model
   # The types of damage.
   class HitType
     NO_DAMAGE = 0       # blue

@@ -1,4 +1,4 @@
-module Calyx::Net
+module RuneRb::Net
   # An implementation of an ISAAC cipher used to generate random numbers for packet interchange.
   class ISAAC
     # Initializes the ISAAC cipher with the given seed.

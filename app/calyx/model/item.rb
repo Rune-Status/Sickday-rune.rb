@@ -1,4 +1,4 @@
-module Calyx::Item
+module RuneRb::Item
   class Item
     attr :id
     attr :count
@@ -129,7 +129,7 @@ module Calyx::Item
     
     def update_weight
       weight = calculate_weight
-      @player.connection.send_data Calyx::Net::PacketBuilder.new(240).add_short(weight.to_i).to_packet
+      @player.connection.send_data RuneRb::Net::PacketBuilder.new(240).add_short(weight.to_i).to_packet
     end
     
     def calculate_weight
@@ -168,7 +168,7 @@ module Calyx::Item
       when Symbol
         id
       when Integer
-        Calyx::Item::ItemDefinition::PROPERTIES[id + 9]
+        RuneRb::Item::ItemDefinition::PROPERTIES[id + 9]
       end
       
       if bonus

@@ -1,4 +1,4 @@
-module Calyx::Doors
+module RuneRb::Doors
   class DoorManager
     @@single_data = []
     @@double_data = []
@@ -19,7 +19,7 @@ module Calyx::Doors
         @@single_data << 
           {
             :id => row['id'].to_i,
-            :location => Calyx::Model::Location.new(row['x'].to_i, row['y'].to_i, row['z'].to_i),
+            :location => RuneRb::Model::Location.new(row['x'].to_i, row['y'].to_i, row['z'].to_i),
             :face => row['face'].to_i,
             :type => row['type'].to_i
           }
@@ -44,7 +44,7 @@ module Calyx::Doors
        @@double_data << 
           {
            :id => row['id'].to_i,
-           :location => Calyx::Model::Location.new(row['x'].to_i, row['y'].to_i, row['z'].to_i),
+           :location => RuneRb::Model::Location.new(row['x'].to_i, row['y'].to_i, row['z'].to_i),
            :face => row['face'].to_i,
            :type => 0
           }
@@ -243,7 +243,7 @@ module Calyx::Doors
     end
   end
   
-  class Door < Calyx::Objects::Object
+  class Door < RuneRb::Objects::Object
     attr :open
     
     def initialize(data, open = true)
@@ -303,8 +303,8 @@ module Calyx::Doors
         end
       end
       
-      temp_l = Calyx::Model::Location.new(data[:location].x+l_x_off, data[:location].y+l_y_off, data[:location].z)
-      temp_r = Calyx::Model::Location.new(data[:location].x+r_x_off, data[:location].y+r_y_off, data[:location].z)
+      temp_l = RuneRb::Model::Location.new(data[:location].x+l_x_off, data[:location].y+l_y_off, data[:location].z)
+      temp_r = RuneRb::Model::Location.new(data[:location].x+r_x_off, data[:location].y+r_y_off, data[:location].z)
       
       l_data = DoorManager.get_double_data((data[:id]+l_id_off), temp_l)
       r_data = DoorManager.get_double_data((data[:id]+r_id_off), temp_r)
@@ -315,7 +315,7 @@ module Calyx::Doors
         @face = l_data[:face]
           
         @orig_id = @id
-        @orig_location = Calyx::Model::Location.new(@location.x, @location.y, @location.z)
+        @orig_location = RuneRb::Model::Location.new(@location.x, @location.y, @location.z)
         @orig_face = @face
         
         # HACKS
@@ -324,7 +324,7 @@ module Calyx::Doors
         @r_door_face = data[:face]
           
         @r_door_orig_id = @r_door_id
-        @r_door_orig_location = Calyx::Model::Location.new(@r_door_location.x, @r_door_location.y, @r_door_location.z)
+        @r_door_orig_location = RuneRb::Model::Location.new(@r_door_location.x, @r_door_location.y, @r_door_location.z)
         @r_door_orig_face = @r_door_face
         
         DoorManager.change_double_state self
@@ -337,7 +337,7 @@ module Calyx::Doors
         @face = data[:face]
           
         @orig_id = @id
-        @orig_location = Calyx::Model::Location.new(@location.x, @location.y, @location.z)
+        @orig_location = RuneRb::Model::Location.new(@location.x, @location.y, @location.z)
         @orig_face = @face
                 
         @r_door_id = r_data[:id]
@@ -345,7 +345,7 @@ module Calyx::Doors
         @r_door_face = r_data[:face]
           
         @r_door_orig_id = @r_door_id
-        @r_door_orig_location = Calyx::Model::Location.new(@r_door_location.x, @r_door_location.y, @r_door_location.z)
+        @r_door_orig_location = RuneRb::Model::Location.new(@r_door_location.x, @r_door_location.y, @r_door_location.z)
         @r_door_orig_face = @r_door_face
         
         DoorManager.change_double_state self

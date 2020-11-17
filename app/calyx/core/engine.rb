@@ -1,4 +1,4 @@
-module Calyx::Engine
+module RuneRb::Engine
   class EventManager
     def initialize
       @scheduler = Rufus::Scheduler::PlainScheduler.start_new

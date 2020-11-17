@@ -1,4 +1,4 @@
-HOOKS ||= Calyx::Misc::AutoHash.new
+HOOKS ||= RuneRb::Misc::AutoHash.new
 
 # Controls
 def on_mouse_click(trigger = :default, &block)
@@ -16,7 +16,7 @@ end
 
 def on_command(name, rights = :player, &block)
   HOOKS[:command][name] = lambda {|player, params|
-    if Calyx::World::RIGHTS.index(player.rights) >= Calyx::World::RIGHTS.index(rights)
+    if RuneRb::World::RIGHTS.index(player.rights) >= RuneRb::World::RIGHTS.index(rights)
       block.call(player, params)
     end
   }

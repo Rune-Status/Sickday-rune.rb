@@ -1,4 +1,4 @@
-module Calyx::GroundItems
+module RuneRb::GroundItems
   class GroundItem
     attr :item
     attr :location
@@ -16,7 +16,7 @@ module Calyx::GroundItems
       @location = @player.location
       @available = true
       @global = false
-      @life = Calyx::GroundItems::GroundItemEvent.new self
+      @life = RuneRb::GroundItems::GroundItemEvent.new self
       @on_table = on_table
       
       @region.ground_items << self
@@ -44,7 +44,7 @@ module Calyx::GroundItems
     end
   end
   
-  class GroundItemEvent < Calyx::Engine::Event
+  class GroundItemEvent < RuneRb::Engine::Event
     attr :item
 
     def initialize(item)
@@ -69,7 +69,7 @@ module Calyx::GroundItems
     end
   end
   
-  class PickupItemAction < Calyx::Engine::Action
+  class PickupItemAction < RuneRb::Engine::Action
     attr :item
     
     def initialize(player, item)
@@ -98,11 +98,11 @@ module Calyx::GroundItems
     end
     
     def queue_policy
-      Calyx::Engine::QueuePolicy::NEVER
+      RuneRb::Engine::QueuePolicy::NEVER
     end
     
     def walkable_policy
-      Calyx::Engine::WalkablePolicy::WALKABLE
+      RuneRb::Engine::WalkablePolicy::WALKABLE
     end
   end
 end

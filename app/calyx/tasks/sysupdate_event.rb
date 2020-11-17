@@ -1,5 +1,5 @@
-module Calyx::Tasks
-  class SystemUpdateEvent < Calyx::Engine::Event
+module RuneRb::Tasks
+  class SystemUpdateEvent < RuneRb::Engine::Event
     attr :state
     attr :seconds
   

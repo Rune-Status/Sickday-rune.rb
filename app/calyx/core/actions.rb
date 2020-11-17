@@ -1,5 +1,5 @@
-module Calyx::Actions
-  class HarvestingAction < Calyx::Engine::Action
+module RuneRb::Actions
+  class HarvestingAction < RuneRb::Engine::Action
     attr :loc
   
     def initialize(player, loc)
@@ -10,11 +10,11 @@ module Calyx::Actions
     end
     
     def queue_policy
-      Calyx::Engine::QueuePolicy::NEVER
+      RuneRb::Engine::QueuePolicy::NEVER
     end
     
     def walkable_policy
-      Calyx::Engine::WalkablePolicy::NON_WALKABLE
+      RuneRb::Engine::WalkablePolicy::NON_WALKABLE
     end
     
     def init

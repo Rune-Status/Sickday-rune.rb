@@ -1,4 +1,4 @@
-module Calyx::Tasks
+module RuneRb::Tasks
   class NPCTickTask
     attr :npc
     
@@ -41,8 +41,8 @@ module Calyx::Tasks
     
     def execute
       # Update block.
-      update_block = Calyx::Net::PacketBuilder.new
-      packet = Calyx::Net::PacketBuilder.new(65, :VARSH)
+      update_block = RuneRb::Net::PacketBuilder.new
+      packet = RuneRb::Net::PacketBuilder.new(65, :VARSH)
       packet.start_bit_access
       
       # Current size of the npc list.

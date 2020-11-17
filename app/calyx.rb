@@ -4,7 +4,7 @@ require 'sqlite3'
 require 'rufus/scheduler'
 require 'ostruct'
 
-module Calyx
+module RuneRb
   autoload :Server,             'calyx/server'
   
   module Engine

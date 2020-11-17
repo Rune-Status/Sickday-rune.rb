@@ -1,4 +1,4 @@
-module Calyx::Player
+module RuneRb::Player
   # Skills
   class Skills
     MAX_EXP = 200000000

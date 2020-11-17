@@ -1,4 +1,4 @@
-module Calyx::Model
+module RuneRb::Model
   # Physical location in the world
   class Location
     attr :x

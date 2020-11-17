@@ -1,4 +1,4 @@
-module Calyx::Model
+module RuneRb::Model
   # Manage all active regions within the server
   class RegionManager
     REGION_SIZE = 32

@@ -1,4 +1,4 @@
-module Calyx::Model
+module RuneRb::Model
   # Any sort of animation in the game
   class Animation
     attr :id

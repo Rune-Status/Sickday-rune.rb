@@ -1,5 +1,5 @@
-module Calyx::NPC
-  class NPC < Calyx::Model::Entity
+module RuneRb::NPC
+  class NPC < RuneRb::Model::Entity
     attr :definition
     attr_accessor :direction
     

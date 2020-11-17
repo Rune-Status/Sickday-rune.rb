@@ -49,7 +49,7 @@ class Integer
   end
 end
 
-module Calyx::Misc
+module RuneRb::Misc
   class AutoHash < Hash
     def initialize(*args)
       super()

@@ -1,4 +1,4 @@
-module Calyx::Net
+module RuneRb::Net
   class JaggrabConnection < EM::Connection
     include EM::P::LineText2
     

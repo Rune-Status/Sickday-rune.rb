@@ -1,4 +1,4 @@
-module Calyx::Player
+module RuneRb::Player
   class InterfaceState
     attr :player
     attr :listeners

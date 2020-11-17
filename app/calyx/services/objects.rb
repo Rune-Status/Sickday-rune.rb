@@ -1,4 +1,4 @@
-module Calyx::Objects
+module RuneRb::Objects
   class ObjectManager
     attr :objects
    
@@ -79,7 +79,7 @@ module Calyx::Objects
     end
   end
   
-  class ObjectEvent < Calyx::Engine::Event
+  class ObjectEvent < RuneRb::Engine::Event
      def initialize()
        super(1000)
      end

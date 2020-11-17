@@ -1,7 +1,7 @@
 require 'eventmachine'
 require 'socket'
 
-module Calyx::Net
+module RuneRb::Net
   # Connection throttling
   CONNECTION_TIMES = {}
   CONNECTION_COUNTS = {}
@@ -260,9 +260,9 @@ module Calyx::Net
 
           # Read credentials
           uid = @buffer.read_int
-          username = Calyx::Misc::NameUtils.format_name_protocol(@buffer.read_str)
+          username = RuneRb::Misc::NameUtils.format_name_protocol(@buffer.read_str)
           password = @buffer.read_str
-          return if check_failed(Calyx::Misc::NameUtils.valid_name?(username), "Username is not valid: #{username}"){
+          return if check_failed(RuneRb::Misc::NameUtils.valid_name?(username), "Username is not valid: #{username}"){
             send_data [11].pack("C")
           }
  
@@ -315,7 +315,7 @@ module Calyx::Net
       
       WORLD.submit_task {
         begin
-          Calyx::Net.handle_packet(@session.player, packet)
+          RuneRb::Net.handle_packet(@session.player, packet)
         rescue Exception => e
           LOG.error "Error processing packet"
           LOG.error e

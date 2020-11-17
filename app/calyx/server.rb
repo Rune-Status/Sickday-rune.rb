@@ -1,4 +1,4 @@
-module Calyx
+module RuneRb
   class Server
     attr :config
     attr_accessor :updatemode
@@ -50,7 +50,7 @@ module Calyx
       HOOKS.clear
       load_hooks
       load_int_hooks
-      Calyx::Net.load_packets
+      RuneRb::Net.load_packets
     end
     
     # Load hooks
@@ -64,7 +64,7 @@ module Calyx
     
     def init_cache
       begin
-        $cache = Calyx::Misc::Cache.new("./data/cache/")
+        $cache = RuneRb::Misc::Cache.new("./data/cache/")
       rescue Exception => e
         $cache = nil
         Logging.logger['cache'].warn e.to_s
@@ -72,10 +72,10 @@ module Calyx
     end
     
     def load_defs
-      Calyx::Item::ItemDefinition.load
+      RuneRb::Item::ItemDefinition.load
       
       # Equipment
-      Calyx::Equipment.load
+      RuneRb::Equipment.load
     end
     
     def load_config
@@ -83,8 +83,8 @@ module Calyx
       WORLD.door_manager.load_single_doors
       WORLD.door_manager.load_double_doors
       
-      Calyx::World::NPCSpawns.load
-      Calyx::World::ItemSpawns.load
+      RuneRb::World::NPCSpawns.load
+      RuneRb::World::ItemSpawns.load
     end
     
     # Binds the server socket and begins accepting player connections.
@@ -107,8 +107,8 @@ module Calyx
           EventMachine.stop
         }
         
-        EventMachine.start_server("0.0.0.0", @config.port + 1, Calyx::Net::JaggrabConnection) if $cache
-        EventMachine.start_server("0.0.0.0", @config.port, Calyx::Net::Connection)
+        EventMachine.start_server("0.0.0.0", @config.port + 1, RuneRb::Net::JaggrabConnection) if $cache
+        EventMachine.start_server("0.0.0.0", @config.port, RuneRb::Net::Connection)
         @log.info "Ready on port #{@config.port}"
       end
     end

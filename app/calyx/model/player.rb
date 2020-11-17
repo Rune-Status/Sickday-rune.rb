@@ -1,5 +1,5 @@
-module Calyx::Model
-  class Player < Calyx::Model::Entity
+module RuneRb::Model
+  class Player < RuneRb::Model::Entity
     # The EventMachine connection.
     attr :connection
     attr :session
@@ -55,17 +55,17 @@ module Calyx::Model
       @out_cipher = session.out_cipher
       @uid = session.uid
       @name = session.username
-      @name_long = Calyx::Misc::NameUtils.name_to_long(@name) #session.name_long
+      @name_long = RuneRb::Misc::NameUtils.name_to_long(@name) #session.name_long
       @password = session.password
-      @appearance = Calyx::Player::Appearance.new
-      @skills = Calyx::Player::Skills.new(self)
+      @appearance = RuneRb::Player::Appearance.new
+      @skills = RuneRb::Player::Skills.new(self)
       
       @var = OpenStruct.new
       @varp = OpenStruct.new
       
-      @interface_state = Calyx::Player::InterfaceState.new self
-      @io = Calyx::Net::ActionSender.new(self)
-      @action_queue = Calyx::Engine::ActionQueue.new
+      @interface_state = RuneRb::Player::InterfaceState.new self
+      @io = RuneRb::Net::ActionSender.new(self)
+      @action_queue = RuneRb::Engine::ActionQueue.new
       
       @rights = :player
       @members = true
@@ -74,14 +74,14 @@ module Calyx::Model
       @flags.flag :appearance
       @teleporting = true
       
-      @equipment = Calyx::Item::Container.new false, 14
-      @inventory = Calyx::Item::Container.new false, 28
-      @bank = Calyx::Item::Container.new true, 352
+      @equipment = RuneRb::Item::Container.new false, 14
+      @inventory = RuneRb::Item::Container.new false, 28
+      @bank = RuneRb::Item::Container.new true, 352
       @settings = {}
         
-      @request_manager = Calyx::Player::RequestManager.new
-      @offered_items = Calyx::Item::Container.new false, 28
-      @gained_items = Calyx::Item::Container.new false, 28
+      @request_manager = RuneRb::Player::RequestManager.new
+      @offered_items = RuneRb::Item::Container.new false, 28
+      @gained_items = RuneRb::Item::Container.new false, 28
       
       @chat_queue = []
       @current_chat_message = nil
@@ -94,7 +94,7 @@ module Calyx::Model
       @out_cipher = session.out_cipher
       @uid = session.uid
       @name = session.username
-      @name_long = Calyx::Misc::NameUtils.name_to_long(@name)
+      @name_long = RuneRb::Misc::NameUtils.name_to_long(@name)
       @password = session.password
     end
     
@@ -134,7 +134,7 @@ module Calyx::Model
       @settings[:energy] = energy
       
       # Update client
-      @connection.send_data Calyx::Net::PacketBuilder.new(110).add_byte(@settings[:energy].to_i).to_packet
+      @connection.send_data RuneRb::Net::PacketBuilder.new(110).add_byte(@settings[:energy].to_i).to_packet
     end
   end
 end

@@ -1,4 +1,4 @@
-module Calyx::World
+module RuneRb::World
   MAXIMUM_SIZE = 50
   DIRECTION_DELTA_X = [-1, 0, 1, -1, 1, -1, 0, 1]
   DIRECTION_DELTA_Y = [1, 1, 1, 0, 0, -1, -1, -1]
@@ -52,7 +52,7 @@ module Calyx::World
         walk_point = next_point
         run_point = (@run_toggle || @run_queue) ? next_point : nil
         
-        @entity.update_energy(run_point != nil) if @entity.instance_of?(Calyx::Model::Player)
+        @entity.update_energy(run_point != nil) if @entity.instance_of?(RuneRb::Model::Player)
         
         @entity.sprites[0] = walk_point ? walk_point.dir : -1
         @entity.sprites[1] = run_point ? run_point.dir : -1

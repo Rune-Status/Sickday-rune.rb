@@ -1,6 +1,6 @@
 require 'xmlsimple'
 
-module Calyx::Shops
+module RuneRb::Shops
   class ShopManager
     @@shops = {}
       
@@ -35,8 +35,8 @@ module Calyx::Shops
       shop.container.remove_empty_slots
       player.io.send_string 3901, shop.name
       player.io.send_interface_inventory 3824, 3822
-      player.interface_state.add_listener shop.container, Calyx::Item::InterfaceContainerListener.new(player, 3900)
-      player.interface_state.add_listener player.inventory, Calyx::Item::InterfaceContainerListener.new(player, 3823)
+      player.interface_state.add_listener shop.container, RuneRb::Item::InterfaceContainerListener.new(player, 3900)
+      player.interface_state.add_listener player.inventory, RuneRb::Item::InterfaceContainerListener.new(player, 3823)
     end
     
     def ShopManager.clamp(x, min, max)
@@ -50,7 +50,7 @@ module Calyx::Shops
       
       # Get price of the item or its parent if noted
       item = player.inventory.items[slot]
-      price = item.definition.properties[:noted] ? Calyx::Item::ItemDefinition.for_id(item.definition.parent).basevalue : item.definition.basevalue
+      price = item.definition.properties[:noted] ? RuneRb::Item::ItemDefinition.for_id(item.definition.parent).basevalue : item.definition.basevalue
       
       # Specialty shops will pay more for items
       multiplier = shop.generalstore ? 0.4 : 0.6
@@ -90,7 +90,7 @@ module Calyx::Shops
       # If there are less items in shop then the player is buying, only buy what the shop has
       amount = item.count < amount ? item.count : amount
      
-      new_item = Calyx::Item::Item.new id, amount
+      new_item = RuneRb::Item::Item.new id, amount
       
       # Only able to buy what fits in inventory.
       if !player.inventory.has_room_for new_item
@@ -100,7 +100,7 @@ module Calyx::Shops
           player.io.send_message "You don't have enough room in your inventory."
           return
         else
-          new_item = Calyx::Item::Item.new id, amount
+          new_item = RuneRb::Item::Item.new id, amount
         end
       end
       
@@ -113,7 +113,7 @@ module Calyx::Shops
       else
         # Least amount they can buy with there money
         amount = [amount, (money.count / price).floor].min
-        new_item = Calyx::Item::Item.new id, amount
+        new_item = RuneRb::Item::Item.new id, amount
       end
       
       total = price * amount
@@ -124,7 +124,7 @@ module Calyx::Shops
         # Make sure the player has enough space in their inventory.
         if player.inventory.has_room_for new_item
           # Remove money from inventory, if no more money empty slot entirely.
-          new_money = (money.count - total) > 0 ? Calyx::Item::Item.new(995, money.count - total) : nil
+          new_money = (money.count - total) > 0 ? RuneRb::Item::Item.new(995, money.count - total) : nil
           player.inventory.set player.inventory.slot_for_id(995), new_money
           
           # Add the purchased item(s) to the player's inventory.
@@ -132,9 +132,9 @@ module Calyx::Shops
           
           # Remove the purchased item(s) from the shop's stock.
           if (item.count - amount) <= 0 && shop.original_stock.include?(item.id)
-            shop.container.set slot, Calyx::Item::Item.new(id, 0)
+            shop.container.set slot, RuneRb::Item::Item.new(id, 0)
           elsif (item.count - amount) > 0
-            shop.container.set slot, Calyx::Item::Item.new(id, left_over)
+            shop.container.set slot, RuneRb::Item::Item.new(id, left_over)
           else
             shop.container.set slot, nil
           end
@@ -165,9 +165,9 @@ module Calyx::Shops
       
       # Un-note if noted
       if item.definition.properties[:noted]
-        shop_item = Calyx::Item::Item.new(item.definition.parent, amount)
+        shop_item = RuneRb::Item::Item.new(item.definition.parent, amount)
       else
-        shop_item = Calyx::Item::Item.new item.id, amount
+        shop_item = RuneRb::Item::Item.new item.id, amount
       end
       
       # Only sell if shop has room for it
@@ -182,10 +182,10 @@ module Calyx::Shops
         return
       end
       
-      money = Calyx::Item::Item.new 995, price
+      money = RuneRb::Item::Item.new 995, price
       
       if player.inventory.has_room_for money
-        player.inventory.remove slot, Calyx::Item::Item.new(item.id, amount)
+        player.inventory.remove slot, RuneRb::Item::Item.new(item.id, amount)
         
         # Add item to shop
         shop.container.add shop_item
@@ -194,10 +194,10 @@ module Calyx::Shops
         
         # If player already has money.
         if money_slot != -1
-          new_money = Calyx::Item::Item.new 995, (player.inventory.items[money_slot].count + price)
+          new_money = RuneRb::Item::Item.new 995, (player.inventory.items[money_slot].count + price)
           player.inventory.set money_slot, new_money
         else
-          new_money = Calyx::Item::Item.new 995, price
+          new_money = RuneRb::Item::Item.new 995, price
           player.inventory.add new_money
         end
       else
@@ -214,14 +214,14 @@ module Calyx::Shops
     attr_accessor :original_stock
         
     def initialize
-      @container = Calyx::Item::Container.new true, 40
+      @container = RuneRb::Item::Container.new true, 40
     end
     
     def original_stock=(stock)
       @container.clear
       @original_stock = stock
       @original_stock.each {|item, amount|
-        @container.items << Calyx::Item::Item.new(item, amount)
+        @container.items << RuneRb::Item::Item.new(item, amount)
       }
     end
   end

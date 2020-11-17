@@ -1,4 +1,4 @@
-module Calyx::Net
+module RuneRb::Net
   class Packet
     # The opcode for this packet
     attr :opcode

@@ -1,5 +1,5 @@
-module Calyx::Tasks
-  class UpdateEvent < Calyx::Engine::Event
+module RuneRb::Tasks
+  class UpdateEvent < RuneRb::Engine::Event
     def initialize
       super(600)
     end

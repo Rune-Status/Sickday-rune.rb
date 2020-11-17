@@ -1,4 +1,4 @@
-module Calyx::World
+module RuneRb::World
   class ItemSpawns
     @@items = []
     
@@ -17,7 +17,7 @@ module Calyx::World
     end
   end
   
-  class ItemEvent < Calyx::Engine::Event
+  class ItemEvent < RuneRb::Engine::Event
     def initialize()
       super(1000)
     end
@@ -42,8 +42,8 @@ module Calyx::World
     attr :on_table
     
     def initialize(data)
-      @item = Calyx::Item::Item.new(data['id'].to_i, (data.include?('amount') ? data['amount'].to_i : 1))
-      @location = Calyx::Model::Location.new(data['x'].to_i, data['y'].to_i, data['z'].to_i)
+      @item = RuneRb::Item::Item.new(data['id'].to_i, (data.include?('amount') ? data['amount'].to_i : 1))
+      @location = RuneRb::Model::Location.new(data['x'].to_i, data['y'].to_i, data['z'].to_i)
       @respawn = data.include?('respawn') ? data['respawn'].to_i : 300 # Number of seconds before it will respawn
       @orig_respawn = @respawn
       @picked_up = false
