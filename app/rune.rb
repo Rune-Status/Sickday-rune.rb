@@ -4,9 +4,13 @@ require 'sqlite3'
 require 'rufus/scheduler'
 require 'ostruct'
 
+# Top-Level namespace
+# Rune.rb is a game server written in Ruby targeting the 2006 era of RuneScape (or the 317-377 protocols). This branch is a fork of the first known ruby server, calyx.
 module RuneRb
+  # An object providing a TCP Server instance via EventMachine.
   autoload :Server,             'rune/server'
 
+  # The Engine module is responsible for scheduling, executing, and observing Events and Actions.
   module Engine
     autoload :EventManager,     'rune/core/engine'
     autoload :Event,            'rune/core/engine'
@@ -16,6 +20,7 @@ module RuneRb
     autoload :ActionQueue,      'rune/core/engine' # TODO move to Actions
   end
 
+  # The Misc module provides Miscellaneous reusable functions to the application.
   module Misc
     autoload :AutoHash,            'rune/core/util'
     autoload :HashWrapper,         'rune/core/util'
@@ -26,10 +31,12 @@ module RuneRb
     autoload :Cache,               'rune/core/cache'
   end
 
+  # The Actions module contains various types of Actions.
   module Actions
     autoload :HarvestingAction,    'rune/core/actions'
   end
 
+  # The Model module provides object models of abstract types.
   module Model
     autoload :HitType,             'rune/model/combat'
     autoload :Hit,                 'rune/model/combat'
@@ -44,6 +51,7 @@ module RuneRb
     autoload :Region,              'rune/model/region'
   end
 
+  # The Item module provides Item-related object models.
   module Item
     autoload :Item,                       'rune/model/item'
     autoload :ItemDefinition,             'rune/model/item'
@@ -54,11 +62,13 @@ module RuneRb
     autoload :BonusListener,              'rune/model/item'
   end
 
+  # The NPC module provides NPC-specific objects, models, and modules.
   module NPC
     autoload :NPC,                 'rune/model/npc'
     autoload :NPCDefinition,       'rune/model/npc'
   end
 
+  # The Player module provides Player-specific objects, models, and modules.
   module Player
     autoload :Appearance,          'rune/model/player/appearance'
     autoload :InterfaceState,      'rune/model/player/interfacestate'
@@ -66,6 +76,7 @@ module RuneRb
     autoload :Skills,              'rune/model/player/skills'
   end
 
+  # The Net module provides most Network-base functionality.
   module Net
     autoload :ActionSender,        'rune/net/actionsender'
     autoload :ISAAC,               'rune/net/isaac'
@@ -76,6 +87,7 @@ module RuneRb
     autoload :JaggrabConnection,   'rune/net/jaggrab'
   end
 
+  # The GroundItems module provides functions and models for managing ground items.
   module GroundItems
     autoload :GroundItem,          'rune/services/ground_items'
     autoload :GroundItemEvent,     'rune/services/ground_items'
@@ -98,6 +110,7 @@ module RuneRb
     autoload :DoorEvent,           'rune/services/doors'
   end
 
+  # The Tasks module provides Task objects and Events used by the game world.
   module Tasks
     autoload :NPCTickTask,         'rune/tasks/npc_update'
     autoload :NPCResetTask,        'rune/tasks/npc_update'
@@ -109,6 +122,7 @@ module RuneRb
     autoload :UpdateEvent,         'rune/tasks/update_event'
   end
 
+  # The World module provides models for objects used by the game world.
   module World
     autoload :Profile,             'rune/world/profile'
     autoload :Pathfinder,          'rune/world/walking'
