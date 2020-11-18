@@ -9,11 +9,11 @@ module RuneRb::NPC
     end
     
     def add_to_region(region)
-      region.npcs << self
+      region.mobs << self
     end
     
     def remove_from_region(region)
-      region.npcs.delete self
+      region.mobs.delete self
     end
   end
 

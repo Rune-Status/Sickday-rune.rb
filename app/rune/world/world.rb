@@ -1,11 +1,13 @@
 module RuneRb::World
   # A World object models a virtual game world.
   class World
+    include RuneRb::World::RegionHelper
+
     attr :players
     attr :npcs
     attr :items
     attr :shops
-    attr :region_manager
+    #attr :region_manager
     attr :event_manager
     attr :shop_manager
     attr :door_manager
@@ -18,7 +20,8 @@ module RuneRb::World
       @npcs = []
       @items = []
       @shops = {}
-      @region_manager = RuneRb::Model::RegionManager.new
+      @regions = []
+
       @event_manager = RuneRb::Engine::EventManager.new
       @loader = YAMLFileLoader.new
       @task_thread = RuneRb::Misc::ThreadPool.new(1)
@@ -26,19 +29,34 @@ module RuneRb::World
       @shop_manager = RuneRb::Shops::ShopManager.new
       @object_manager = RuneRb::Objects::ObjectManager.new
       @door_manager = RuneRb::Doors::DoorManager.new
-      register_global_events
+
       load_item_spawns
       load_shops
       load_doors
       load_mob_spawns
+      register_global_events
     end
 
     def load_item_spawns
       RuneRb::Database::LEGACY[:item_spawns].all.each do |item|
-        @items << RuneRb::World::Item.new(item)
+        @items << RuneRb::World::WorldItem.new(self, item)
+        #@items << RuneRb::World::Item.new(item)
       end
+      submit_event(RuneRb::World::WorldItemEvent.new(self))
+    rescue StandardError => e
+      puts 'An error occurred while spawning Items!'
+      puts e
+      puts e.backtrace
+    end
 
-      submit_event(RuneRb::World::ItemEvent.new)
+    def load_mob_spawns
+      RuneRb::Database::LEGACY[:mob_spawns].all.each do |row|
+        spawn_mob(row, row[:shop_id] || nil)
+      end
+    rescue StandardError => e
+      puts 'An error occurred while spawning Mobs!'
+      puts e
+      puts e.backtrace
     end
 
     def load_shops
@@ -54,6 +72,10 @@ module RuneRb::World
           end
         end
       end
+    rescue StandardError => e
+      puts 'An error occurred while loading Shops!'
+      puts e
+      puts e.backtrace
     end
 
     def load_doors
@@ -61,17 +83,6 @@ module RuneRb::World
       @door_manager.load_double_doors
     rescue StandardError => e
       puts 'An error occurred while loading Doors!'
-      puts e
-      puts e.backtrace
-    end
-
-    def load_mob_spawns
-      RuneRb::Database::LEGACY[:mob_spawns].all.each do |row|
-        spawn_mob(row, row[:shop_id] || nil)
-      end
-      puts 'Loaded Mob Spawns'
-    rescue StandardError => e
-      puts 'An error occurred while spawning Mobs!'
       puts e
       puts e.backtrace
     end

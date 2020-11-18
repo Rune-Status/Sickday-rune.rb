@@ -43,9 +43,32 @@ module RuneRb::Tasks
       packet.start_bit_access
 
       # Current size of the npc list.
-      packet.add_bits(8, @player.local_npcs.size)
+      packet.add_bits(8, @player.local_mobs.size)
 
 
+
+
+      @player.local_mobs.delete_if do |mob|
+        removal = !WORLD.npcs.include?(mob) || mob.teleporting || !mob.location.within_distance?(@player.location)
+        if removal
+          packet.add_bits(1, 1)
+          packet.add_bits(2, 3)
+        else
+          update_npc_movement(packet, mob)
+          update_npc(update_block, mob) if mob.flags.update_required?
+        end
+        removal
+      end
+
+      WORLD.local_mobs(@player).each do |mob|
+        break if @player.local_mobs.size >= 255
+        next if @player.local_mobs.include?(mob)
+
+        @player.local_mobs << mob
+        add_new_npc(packet, mob)
+        update_npc(update_block, mob) if mob.flags.update_required?
+      end
+=begin
       # Go through every local NPC.
       @player.local_npcs.delete_if {|npc|
         should_remove = !WORLD.npcs.include?(npc) || npc.teleporting || !npc.location.within_distance?(@player.location)
@@ -76,6 +99,7 @@ module RuneRb::Tasks
         # Only update if there is an update needed.
         update_npc(update_block, npc) if npc.flags.update_required?
       end
+=end
 
       unless update_block.empty?
         packet.add_bits 14, 16383

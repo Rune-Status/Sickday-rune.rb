@@ -42,7 +42,18 @@ module RuneRb::Objects
         player.io.send_replace_object(@location, player.last_location, @id, @face, @type)
         return
       end
-      
+      WORLD.local_players(@location).each do |player|
+        if @location != @orig_location
+          player.io.send_replace_object(@orig_location,
+                                        player.last_location,
+                                        -1, @face,
+                                        @type)
+        end
+
+        player.io.send_replace_object(@location, player.last_location, @id, @face, @type)
+      end
+
+=begin
       WORLD.region_manager.get_local_players(@location).each {|p|
         # Remove old object if the new object is in a new location
         if @location != @orig_location
@@ -52,6 +63,7 @@ module RuneRb::Objects
         # Create the new object for all local players
         p.io.send_replace_object(@location, p.last_location, @id, @face, @type)
       }
+=end
     end
     
     def reset(player = nil)
@@ -65,8 +77,21 @@ module RuneRb::Objects
          player.io.send_replace_object(@orig_location, player.last_location, @orig_id, @orig_face, @type)
          return
        end
-       
-       
+
+      WORLD.local_players(@location).each do |player|
+        if @location != @orig_location
+          player.io.send_replace_object(@location,
+                                        player.last_location,
+                                        -1, @orig_face, @type)
+        end
+
+        player.io.send_replace_object(@orig_location,
+                                       player.last_location,
+                                       @orig_id, @orig_face,
+                                       @type)
+      end
+
+=begin
        WORLD.region_manager.get_local_players(@location).each {|p|
          # Remove object if the object was in a new location
          if @location != @orig_location
@@ -76,6 +101,7 @@ module RuneRb::Objects
          # Create the new object for all local players
          p.io.send_replace_object(@orig_location, p.last_location, @orig_id, @orig_face, @type)
        }
+=end
     end
   end
   

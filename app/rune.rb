@@ -143,14 +143,16 @@ module RuneRb
     include Constants
 
     autoload :Profile,             'rune/world/profile'
+    autoload :RegionHelper,        'rune/world/helpers/region_helper'
     autoload :Pathfinder,          'rune/world/walking'
     autoload :Point,               'rune/world/walking'
+    autoload :WorldItem,           'rune/world/item'
+    autoload :WorldItemEvent,      'rune/world/item'
     autoload :Item,                'rune/world/item_spawns'
     autoload :World,               'rune/world/world'
     autoload :LoginResult,         'rune/world/world'
     autoload :Loader,              'rune/world/world'
     autoload :YAMLFileLoader,      'rune/world/world'
-    autoload :ItemSpawns,          'rune/world/item_spawns'
   end
 
   # The Database module provides database connectivity and models

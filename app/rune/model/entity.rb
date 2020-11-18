@@ -8,6 +8,7 @@ module RuneRb::Model
     attr :cool_downs
     attr :local_players
     attr :local_npcs
+    attr :local_mobs
     attr_accessor :index
 
     # Location
@@ -46,6 +47,7 @@ module RuneRb::Model
       @cool_downs = RuneRb::Misc::Flags.new
       @local_players = []
       @local_npcs = []
+      @local_mobs = []
       @sprites = Array.new(2, -1)
 
       @location = RuneRb::Model::Location.new(2887, 10224, 0)
@@ -102,7 +104,8 @@ module RuneRb::Model
 
     def location=(location)
       @location = location
-      region = @world.region_manager.get_region_for_location(location)
+      region = @world.region_for_location(@location)
+      # region = @world.region_manager.get_region_for_location(location)
       return if region.nil?
 
       remove_from_region(@region) unless @region.nil?

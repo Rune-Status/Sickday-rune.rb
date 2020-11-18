@@ -164,9 +164,9 @@ on_packet(236) {|player, packet|
   end
   
   if !world_item
-    item = WORLD.region_manager.get_surrounding_regions(player.location).inject([]){|all, region| all + region.ground_items}.find {|item|
-      item.item.id == item_id && item.location.x == loc.x && item.location.y == loc.y
-    }
+    item = WORLD.surrounding_regions(player.location).inject([]) { |all, region| all + region.ground_items }.detect do |ground_item|
+      ground_item.item.id == item_id && ground_item.location.x == loc.x && ground_item.location.y == loc.y
+    end
   end
 
   unless item == nil
@@ -197,9 +197,11 @@ on_packet(253) {|player, packet|
   item_x = packet.read_short_a.ushort
   item_y = packet.read_short.ushort
   item_id = packet.read_short_a.ushort
-  item = WORLD.region_manager.get_surrounding_regions(player.location).inject([]){|all, region| all + region.ground_items}.find {|item|
-    item.item.id == item_id && item.location.x == item_x && item.location.y == item_y
-  }
+
+
+  item = WORLD.surrounding_regions(player.location).inject([]) { |all, region| all + region.ground_items }.detect do |ground_item|
+    ground_item.item.id == item_id && ground_item.location.x == loc.x && ground_item.location.y == loc.y
+  end
   
   next unless item != nil
   next unless player.location.within_interaction_distance?(item.location)

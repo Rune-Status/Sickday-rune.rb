@@ -57,7 +57,7 @@ on_packet(181) {|player, packet|
   item_id = packet.read_short.ushort
   item_x = packet.read_leshort
   spell = packet.read_short_a.ushort
-  item = WORLD.region_manager.get_surrounding_regions(player.location).inject([]){|all, region| all + region.ground_items}.find {|item|
+  item = WORLD.surrounding_regions(player.location).inject([]){|all, region| all + region.ground_items}.find {|item|
     item.item.id == item_id && item.location.x == item_x && item.location.y == item_y
   }
   

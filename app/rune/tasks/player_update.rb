@@ -50,41 +50,36 @@ module RuneRb::Tasks
       update_block = RuneRb::Net::PacketBuilder.new
       packet = RuneRb::Net::PacketBuilder.new(81, :VARSH)
       packet.start_bit_access
-      
+
       # Update current player
       update_this_player_movement packet
       update_player update_block, @player, false, true
-      
+
       # Process local player list
       packet.add_bits 8, @player.local_players.size
-      @player.local_players.delete_if {|p|
-        should_remove = !WORLD.players.include?(p) || p.teleporting || !p.location.within_distance?(@player.location)
-        
-        if should_remove
-          packet.add_bits 1, 1
-          packet.add_bits 2, 3
+
+      @player.local_players.delete_if do |player|
+        removal = !WORLD.players.include?(player) || player.teleporting || !player.location.within_distance?(@player.location)
+        if removal
+          packet.add_bits(1, 1)
+          packet.add_bits(2, 3)
         else
-          update_player_movement packet, p
-          update_player update_block, p, false, false if p.flags.update_required?
+          update_player_movement(packet, player)
+          update_player(update_block, player, false, false) if player.flags.update_required?
         end
-      
-        should_remove
-      }
-      
-      # Check if we should add any new players to the list
-      WORLD.region_manager.get_local_players(@player).each {|p|
-        # Make sure we have space and avoid duplicates
-        break if @player.local_players.size >= 255
-        next if p.index == nil || p.eql?(@player) || @player.local_players.include?(p)
-        
-        # Add and update the new player
-        @player.local_players << p
-        add_new_player packet, p
-        update_player update_block, p, true, false
-      }
+      end
+
+      WORLD.local_players(@player).each do |player|
+        break if @player.local_players.size >= 0xff
+        next if player.index.nil? || player.eql?(@player) || @player.local_players.include?(player)
+
+        @player.local_players << player
+        add_new_player(packet, player)
+        update_player(update_block, player, true, false)
+      end
       
       unless update_block.empty?
-        packet.add_bits 11, 2047
+        packet.add_bits(11, 2047)
         packet.finish_bit_access
         packet.add_bytes(update_block.to_packet.buffer)
       else

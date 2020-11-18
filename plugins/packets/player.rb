@@ -11,8 +11,8 @@ on_packet(210) {|player, packet|
   }
 
   # Update NPC faces
-  WORLD.region_manager.get_local_npcs(player).each do |npc|
-    npc.flags.flag(:face_coord) unless npc.direction.nil?
+  WORLD.local_mobs(player).each do |mob|
+    mob.flags.flag(:face_coord) unless mob.direction.nil?
   end
 
   # Spawn local world items
