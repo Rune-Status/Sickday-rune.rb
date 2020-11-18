@@ -109,11 +109,6 @@ module RuneRb
     autoload :PickupItemAction,    'rune/services/ground_items'
   end
 
-  module Shops
-    autoload :ShopManager,         'rune/services/shops'
-    autoload :Shop,                'rune/services/shops'
-  end
-
   # The Tasks module provides Task objects and Events used by the game world.
   module Tasks
     autoload :NPCTickTask,         'rune/tasks/npc_update'
@@ -135,6 +130,9 @@ module RuneRb
 
     autoload :RegionHelper,        'rune/world/helpers/region_helper'
     autoload :DoorHelper,          'rune/world/helpers/door_helper'
+    autoload :ShopHelper,          'rune/world/helpers/shop_helper'
+
+    autoload :Shop,                'rune/world/shop'
 
     autoload :Pathfinder,          'rune/world/walking'
     autoload :Point,               'rune/world/walking'
@@ -144,10 +142,10 @@ module RuneRb
 
     autoload :WorldObject,         'rune/world/object'
     autoload :WorldObjectEvent,    'rune/world/object'
+
     autoload :WorldItem,           'rune/world/item'
     autoload :WorldItemEvent,      'rune/world/item'
 
-    autoload :Item,                'rune/world/item_spawns'
     autoload :World,               'rune/world/world'
     autoload :LoginResult,         'rune/world/world'
     autoload :Loader,              'rune/world/world'

@@ -3,6 +3,7 @@ module RuneRb::World
   class World
     include RuneRb::World::RegionHelper
     include RuneRb::World::DoorHelper
+    include RuneRb::World::ShopHelper
 
     # @return [Array] a collection of players handled by the World Instance.
     attr :players
@@ -20,9 +21,6 @@ module RuneRb::World
     attr :shops
 
     attr :event_manager
-    attr :shop_manager
-    #attr :door_manager
-    #attr :object_manager
     attr :loader
     attr :work_thread
 
@@ -51,9 +49,6 @@ module RuneRb::World
       @loader = YAMLFileLoader.new
       @task_thread = RuneRb::Misc::ThreadPool.new(1)
       @work_thread = RuneRb::Misc::ThreadPool.new(1)
-      @shop_manager = RuneRb::Shops::ShopManager.new
-      #@object_manager = RuneRb::Objects::ObjectManager.new
-      #@door_manager = RuneRb::Doors::DoorManager.new
 
       load_item_spawns
       load_shops
@@ -88,7 +83,7 @@ module RuneRb::World
     # Loads shop data from the database and parses shops from that data.
     def load_shops
       RuneRb::Database::LEGACY[:shops].all.each do |shop_data|
-        @shops[shop_data[:id]] = RuneRb::Shops::Shop.new
+        @shops[shop_data[:id]] = RuneRb::World::Shop.new
         @shops[shop_data[:id]].name = shop_data[:name]
         @shops[shop_data[:id]].generalstore = shop_data[:general_store]
         @shops[shop_data[:id]].customstock = true
@@ -216,7 +211,7 @@ module RuneRb::World
       return unless shop && !HOOKS[:npc_option2][data[:mob_id]].is_a?(Proc)
 
       on_npc_option2(data[:mob_id]) do |player, npc|
-        WORLD.shop_manager.open(data[:shop_id], player)
+        WORLD.open(data[:shop_id], player)
         player.interacting_entity = npc
       end
     end
