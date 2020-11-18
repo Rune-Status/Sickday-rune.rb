@@ -114,17 +114,6 @@ module RuneRb
     autoload :Shop,                'rune/services/shops'
   end
 
-  module Objects
-    autoload :ObjectManager,       'rune/services/objects'
-  end
-
-  module Doors
-    autoload :DoorManager,         'rune/services/doors'
-    autoload :Door,                'rune/services/doors'
-    autoload :DoubleDoor,          'rune/services/doors'
-    autoload :DoorEvent,           'rune/services/doors'
-  end
-
   # The Tasks module provides Task objects and Events used by the game world.
   module Tasks
     autoload :NPCTickTask,         'rune/tasks/npc_update'
@@ -143,11 +132,21 @@ module RuneRb
     include Constants
 
     autoload :Profile,             'rune/world/profile'
+
     autoload :RegionHelper,        'rune/world/helpers/region_helper'
+    autoload :DoorHelper,          'rune/world/helpers/door_helper'
+
     autoload :Pathfinder,          'rune/world/walking'
     autoload :Point,               'rune/world/walking'
+
+    autoload :Door,                'rune/world/door'
+    autoload :DoubleDoor,          'rune/world/door'
+
+    autoload :WorldObject,         'rune/world/object'
+    autoload :WorldObjectEvent,    'rune/world/object'
     autoload :WorldItem,           'rune/world/item'
     autoload :WorldItemEvent,      'rune/world/item'
+
     autoload :Item,                'rune/world/item_spawns'
     autoload :World,               'rune/world/world'
     autoload :LoginResult,         'rune/world/world'

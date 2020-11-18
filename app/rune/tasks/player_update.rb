@@ -46,7 +46,7 @@ module RuneRb::Tasks
     
     def execute
       @player.io.send_map_region if @player.region_change
-      
+
       update_block = RuneRb::Net::PacketBuilder.new
       packet = RuneRb::Net::PacketBuilder.new(81, :VARSH)
       packet.start_bit_access
@@ -59,11 +59,21 @@ module RuneRb::Tasks
       packet.add_bits 8, @player.local_players.size
 
       @player.local_players.delete_if do |player|
-        removal = !WORLD.players.include?(player) || player.teleporting || !player.location.within_distance?(@player.location)
+        # Remove if the WORLD instance no longer includes this player
+        removal = true unless WORLD.players.include?(player)
+
+        # Remove if the player is teleporting
+        removal = true if player.teleporting
+
+        # Remove if the player is no longer within distance of the context player.
+        removal = true unless player.location.within_distance?(@player.location)
+
         if removal
+          # Add bits to indicate we're removing the mob at this index
           packet.add_bits(1, 1)
           packet.add_bits(2, 3)
         else
+          # Update the player's movement, and apply a state update to the update block if they require one.
           update_player_movement(packet, player)
           update_player(update_block, player, false, false) if player.flags.update_required?
         end
@@ -77,18 +87,18 @@ module RuneRb::Tasks
         add_new_player(packet, player)
         update_player(update_block, player, true, false)
       end
-      
-      unless update_block.empty?
+
+      if update_block.empty?
+        packet.finish_bit_access
+      else
         packet.add_bits(11, 2047)
         packet.finish_bit_access
         packet.add_bytes(update_block.to_packet.buffer)
-      else
-        packet.finish_bit_access
       end
-      
+
       @player.connection.send_data packet.to_packet
     end
-    
+
     def update_player_movement(packet, p)
       sprites = p.sprites
       

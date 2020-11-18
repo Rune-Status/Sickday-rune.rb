@@ -7,11 +7,19 @@ on_int_button(2458) {|player|
 on_command('objspawn') {|player, params|
   temp_loc = player.location
 
-  object = RuneRb::Objects::Object.new(params[0].to_i, temp_loc, 2, params[1].to_i, -1, temp_loc, 0, params[2].to_i)
+  object = RuneRb::World::WorldObject.new(WORLD,
+                                          id: params[0].to_i,
+                                          location: temp_loc,
+                                          face: 2,
+                                          type: params[1].to_i,
+                                          orig_id: -1,
+                                          orig_location: temp_loc,
+                                          orig_face: 0,
+                                          delay: params[2].to_i)
   object.change
 
   # Add this to the object manager
-  WORLD.object_manager.objects << object
+  WORLD.objects << object
 }
 
 # Testing

@@ -45,11 +45,11 @@ module Woodcutting
   ]
   
   @@trees = {}
-  @@tree_types.each {|tree|
-    tree.objects.each {|id|
+  @@tree_types.each do |tree|
+    tree.objects.each do |id|
       @@trees[id] = tree
-    }
-  }
+    end
+  end
   
   class WoodcuttingAction < RuneRb::Actions::HarvestingAction
     attr_accessor :cycle_count
@@ -66,27 +66,27 @@ module Woodcutting
       level = player.skills.skills[:woodcutting]
       
       # Check if we have a axe we can use
-      @axe = ::Woodcutting.axes.find {|h, v|
+      @axe = ::Woodcutting.axes.find do |h, v|
         player.equipment.contains(h) || player.inventory.contains(h) && level >= v[:level]
-      }
+      end
       
       # Replace with value (hash)
       @axe = @axe[1] unless @axe == nil
       
       if @axe == nil
-        player.io.send_message "You do not have an axe for which you have the level to use."
+        player.io.send_message 'You do not have an axe for which you have the level to use.'
         stop
         return
       end
       
       # Check if we can cut this tree
       if level < @tree.level
-        player.io.send_message "You do not have the required level to cut down this tree."
+        player.io.send_message 'You do not have the required level to cut down this tree.'
         stop
         return
       end
       
-      player.io.send_message "You swing your axe at the tree..."
+      player.io.send_message 'You swing your axe at the tree...'
       @cycle_count = calculate
     end
     
@@ -114,18 +114,25 @@ module Woodcutting
     def cycles; @tree.level == 1 ? 1 : @cycle_count end
   end
   
-  @@trees.each {|id, data|
-    on_obj_option(id) {|player, loc|
+  @@trees.each do |id, data|
+    on_obj_option(id) do |player, loc|
       player.io.send_message loc.to_s
-    
-      object = RuneRb::Objects::Object.new(1342, loc, 0, 10, 1278, loc, 0, 3)
+
+      object = RuneRb::World::WorldObject.new(WORLD, { id: 1342,
+                                                       location: loc,
+                                                       face: 0,
+                                                       type: 10,
+                                                       orig_id: 1278,
+                                                       orig_location: loc,
+                                                       orig_face: 0,
+                                                       delay: 3 })
       object.change
-      
+
       # Add this to the object manager
-      WORLD.object_manager.objects << object
+      WORLD.objects << object
       
       #player.action_queue.add WoodcuttingAction.new(player, loc, data)
-    }
-  }
+    end
+  end
 end
 

@@ -77,7 +77,6 @@ module RuneRb::GroundItems
     end
 
     def execute
-      puts "Picking up #{item}"
       p_loc = @player.location
       item_loc = @item.location
 

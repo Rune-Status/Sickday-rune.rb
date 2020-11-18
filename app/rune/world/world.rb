@@ -2,33 +2,58 @@ module RuneRb::World
   # A World object models a virtual game world.
   class World
     include RuneRb::World::RegionHelper
+    include RuneRb::World::DoorHelper
 
+    # @return [Array] a collection of players handled by the World Instance.
     attr :players
+
+    # @return [Array] a collection of npcs handled by the World Instance.
     attr :npcs
+
+    # @return [Array] a collection of items handled by the World Instance.
     attr :items
+
+    # @return [Array] a collection of objects handled by the World Instance.
+    attr :objects
+
+    # @return [Hash] a map of shops handled by the World Instance.
     attr :shops
-    #attr :region_manager
+
     attr :event_manager
     attr :shop_manager
-    attr :door_manager
-    attr :object_manager
+    #attr :door_manager
+    #attr :object_manager
     attr :loader
     attr :work_thread
 
+    # Called when a new World Instance is created.
     def initialize
       @players = []
       @npcs = []
       @items = []
       @shops = {}
       @regions = []
+      @objects = []
+
+      # Door Handling
+      @single_doors = []
+      @double_doors = []
+      @open_single_doors = [ 1504, 1514, 1517, 1520, 1531,
+                             1534, 2033, 2035, 2037, 2998,
+                             3271, 4468, 4697, 6101, 6103,
+                             6105, 6107, 6109, 6111, 6113,
+                             6115, 6976, 6978, 8696, 8819,
+                             10_261, 10_263, 10_265, 11_708, 11_710,
+                             11_712, 11_715, 11_994, 12_445, 13_002]
+      @open_double_doors = [1520, 1517]
 
       @event_manager = RuneRb::Engine::EventManager.new
       @loader = YAMLFileLoader.new
       @task_thread = RuneRb::Misc::ThreadPool.new(1)
       @work_thread = RuneRb::Misc::ThreadPool.new(1)
       @shop_manager = RuneRb::Shops::ShopManager.new
-      @object_manager = RuneRb::Objects::ObjectManager.new
-      @door_manager = RuneRb::Doors::DoorManager.new
+      #@object_manager = RuneRb::Objects::ObjectManager.new
+      #@door_manager = RuneRb::Doors::DoorManager.new
 
       load_item_spawns
       load_shops
@@ -37,10 +62,10 @@ module RuneRb::World
       register_global_events
     end
 
+    # Loads item spawns from the database and creates appropriate WorldItems for models.
     def load_item_spawns
       RuneRb::Database::LEGACY[:item_spawns].all.each do |item|
         @items << RuneRb::World::WorldItem.new(self, item)
-        #@items << RuneRb::World::Item.new(item)
       end
       submit_event(RuneRb::World::WorldItemEvent.new(self))
     rescue StandardError => e
@@ -49,6 +74,7 @@ module RuneRb::World
       puts e.backtrace
     end
 
+    # Loads mob spawns from the database and creates appropriate Mobs for models.
     def load_mob_spawns
       RuneRb::Database::LEGACY[:mob_spawns].all.each do |row|
         spawn_mob(row, row[:shop_id] || nil)
@@ -59,6 +85,7 @@ module RuneRb::World
       puts e.backtrace
     end
 
+    # Loads shop data from the database and parses shops from that data.
     def load_shops
       RuneRb::Database::LEGACY[:shops].all.each do |shop_data|
         @shops[shop_data[:id]] = RuneRb::Shops::Shop.new
@@ -78,9 +105,10 @@ module RuneRb::World
       puts e.backtrace
     end
 
+    # Calls door loading functions on the `World#door_manager`
     def load_doors
-      @door_manager.load_single_doors
-      @door_manager.load_double_doors
+      load_single_doors
+      load_double_doors
     rescue StandardError => e
       puts 'An error occurred while loading Doors!'
       puts e
@@ -88,27 +116,25 @@ module RuneRb::World
     end
 
     def add_to_login_queue(session)
-      submit_work {
+      submit_work do
         lr = @loader.check_login(session)
         response = lr.response
 
         # New login, so try loading profile
-        if response == 2 && !@loader.load_profile(lr.player)
-          response = 13
-        end
+        response = 13 if response == 2 && !@loader.load_profile(lr.player)
 
-        unless response == 2
+        if response == 2
+          session.player = lr.player
+          submit_task do
+            register lr.player
+          end
+        else
           bldr = RuneRb::Net::PacketBuilder.new(-1, :RAW)
           bldr.add_byte response
           session.connection.send_data bldr.to_packet
           session.connection.close_connection true
-        else
-          session.player = lr.player
-          submit_task {
-            register lr.player
-          }
         end
-      }
+      end
     end
 
     def register(player)
@@ -125,35 +151,35 @@ module RuneRb::World
 
       player.connection.send_data bldr.to_packet
 
-      HOOKS[:player_login].each {|k, v|
+      HOOKS[:player_login].each do |k, v|
         begin
           v.call(player)
         rescue Exception => e
           RuneRb::World::PLUGIN_LOG.error "Unable to run login hook #{k}"
           RuneRb::World::PLUGIN_LOG.error e
         end
-      }
+      end
 
       player.io.send_login
     end
 
     def unregister(player, single=true)
       if @players.include?(player)
-        HOOKS[:player_logout].each {|k, v|
+        HOOKS[:player_logout].each do |k, v|
           begin
             v.call(player)
           rescue Exception => e
             RuneRb::World::PLUGIN_LOG.error "Unable to run logout hook #{k}"
             RuneRb::World::PLUGIN_LOG.error e
           end
-        }
+        end
 
         player.destroy
         player.connection.close_connection_after_writing
         @players.delete(player) if single
-        submit_work {
+        submit_work do
           @loader.save_profile(player)
-        }
+        end
       end
     end
 
@@ -199,7 +225,7 @@ module RuneRb::World
 
     def register_global_events
       submit_event RuneRb::Tasks::UpdateEvent.new
-      submit_event RuneRb::Objects::ObjectEvent.new
+      submit_event RuneRb::World::WorldObjectEvent.new(self)
     end
   end
 
@@ -230,9 +256,7 @@ module RuneRb::World
   class YAMLFileLoader < Loader
     def check_login(session)
       # Check password validity
-      unless validate_credentials(session.username, session.password)
-        return LoginResult.new(3, nil)
-      end
+      return LoginResult.new(3, nil) unless validate_credentials(session.username, session.password)
 
       existing = WORLD.players.find(nil) {|p| p.name.eql?(session.username)}
 
@@ -312,31 +336,31 @@ module RuneRb::World
     end
 
     def encode_skills(skills)
-      RuneRb::Player::SKILLS.inject([]){|arr, sk|
+      RuneRb::Player::SKILLS.inject([]) do |arr, sk|
         arr << [skills.skills[sk], skills.exps[sk]]
-      }
+      end
     end
 
     def decode_skills(skills, data)
-      data.each_with_index {|val, i|
+      data.each_with_index do |val, i|
         skills.set_skill RuneRb::Player::SKILLS[i], val[0], val[1], false
-      }
+      end
     end
 
     def encode_container(container)
       arr = Array.new(container.capacity, [-1, -1])
 
-      container.items.each_with_index {|val, i|
+      container.items.each_with_index do |val, i|
         arr[i] = [val.id, val.count] unless val.nil?
-      }
+      end
 
       arr
     end
 
     def decode_container(container, arr)
-      arr.each_with_index {|val, i|
+      arr.each_with_index do |val, i|
         container.set i, (val[0] == -1 ? nil : RuneRb::Item::Item.new(val[0], val[1]))
-      }
+      end
     end
 
     def default_profile(player)

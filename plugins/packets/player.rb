@@ -6,7 +6,7 @@ on_packet(202) {|player, packet|
 # Enter new region
 on_packet(210) {|player, packet|
   # Update objects
-  WORLD.object_manager.objects.each {|object|
+  WORLD.objects.each {|object|
     object.change(player) if object.location.within_distance?(player.location)
   }
 
