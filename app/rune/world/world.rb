@@ -166,6 +166,12 @@ module RuneRb::World
       npc = RuneRb::NPC::NPC.new(RuneRb::NPC::NPCDefinition.for_id(data[:mob_id]), self)
       npc.location = RuneRb::Model::Location.new(data[:x], data[:y], data[:z])
       npc.direction = data[:face]&.to_sym || :north
+      case data[:face]
+      when 'north_west' then npc.direction = :northwest
+      when 'north_east' then npc.direction = :northeast
+      when 'south_east' then npc.direction = :southeast
+      when 'south_west' then npc.direction = :southwest
+      end
       offsets = RuneRb::World::NPC_DIRECTIONS[npc.direction]
       npc.face(npc.location.transform(offsets[0], offsets[1], 0))
       register_npc(npc)
